@@ -37,6 +37,7 @@ src/
     CommandCenter.Api/
 docs/
   drone-xone-airspace-blueprint.md
+  feature-matrix.md
   architecture.md
   mvp-roadmap.md
   event-flow.md
@@ -76,6 +77,12 @@ Especificacoes iniciais dos modulos MVP:
 Documento completo da visao de plataforma e capacidades:
 
 - `docs/drone-xone-airspace-blueprint.md`
+
+## Matriz de Entrega
+
+Priorizacao executavel das funcionalidades por fase:
+
+- `docs/feature-matrix.md`
 
 ## Como rodar localmente
 
