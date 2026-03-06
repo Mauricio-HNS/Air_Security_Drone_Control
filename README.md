@@ -27,7 +27,7 @@ apps/
   command-center-prototype/
 src/
   BuildingBlocks/
-    AirSecurityCity.BuildingBlocks/
+    AirSecurityDroneControl.BuildingBlocks/
   Services/
     SensorGateway.Api/
     Fusion.Api/
@@ -76,7 +76,7 @@ Especificacoes iniciais dos modulos MVP:
 
 ```bash
 dotnet restore
-dotnet build AirSecurityCity.sln
+dotnet build AirSecurityDroneControl.sln
 ```
 
 2. Subir servicos (terminais separados):

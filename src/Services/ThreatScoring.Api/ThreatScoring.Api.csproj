@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <ItemGroup>
-    <ProjectReference Include="..\..\BuildingBlocks\AirSecurityCity.BuildingBlocks\AirSecurityCity.BuildingBlocks.csproj" />
+    <ProjectReference Include="..\..\BuildingBlocks\AirSecurityDroneControl.BuildingBlocks\AirSecurityDroneControl.BuildingBlocks.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

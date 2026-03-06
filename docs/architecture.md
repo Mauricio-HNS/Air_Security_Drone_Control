@@ -10,7 +10,7 @@
 
 ## Building Blocks
 
-Contratos compartilhados em `AirSecurityCity.BuildingBlocks`:
+Contratos compartilhados em `AirSecurityDroneControl.BuildingBlocks`:
 
 - `DetectionEvent`
 - `FusedTrack`

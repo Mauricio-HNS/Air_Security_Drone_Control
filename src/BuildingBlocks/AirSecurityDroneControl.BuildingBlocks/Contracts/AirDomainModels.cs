@@ -1,4 +1,4 @@
-namespace AirSecurityCity.BuildingBlocks.Contracts;
+namespace AirSecurityDroneControl.BuildingBlocks.Contracts;
 
 public enum SensorType
 {
