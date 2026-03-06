@@ -1,4 +1,4 @@
-# Arquitetura - DroneShield OS
+# Arquitetura - Air Security City
 
 ## Servicos MVP
 
@@ -10,7 +10,7 @@
 
 ## Building Blocks
 
-Contratos compartilhados em `DroneShield.BuildingBlocks`:
+Contratos compartilhados em `AirSecurityCity.BuildingBlocks`:
 
 - `DetectionEvent`
 - `FusedTrack`

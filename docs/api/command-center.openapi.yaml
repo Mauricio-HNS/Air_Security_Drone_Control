@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: DroneShield Command Center API
+  title: Air Security City Command Center API
   version: 0.1.0
 paths:
   /health:

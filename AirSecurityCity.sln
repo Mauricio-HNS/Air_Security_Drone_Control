@@ -7,7 +7,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{827E0CD3-B72
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BuildingBlocks", "BuildingBlocks", "{90298CBA-BD6F-3A0A-69D5-97CAD7B05E7E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DroneShield.BuildingBlocks", "src\BuildingBlocks\DroneShield.BuildingBlocks\DroneShield.BuildingBlocks.csproj", "{0454268B-8245-40E6-91E2-95EAA83B57FB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AirSecurityCity.BuildingBlocks", "src\BuildingBlocks\AirSecurityCity.BuildingBlocks\AirSecurityCity.BuildingBlocks.csproj", "{0454268B-8245-40E6-91E2-95EAA83B57FB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SensorGateway.Api", "src\Services\SensorGateway.Api\SensorGateway.Api.csproj", "{A1E1FD1D-99AE-4733-8FC3-5980C2240F17}"
 EndProject

@@ -1,4 +1,4 @@
-# DroneShield OS
+# Air Security City
 
 Plataforma modular de consciencia situacional aerea para deteccao, classificacao, fusao, tracking e resposta operacional contra ameacas em baixo espaco aereo urbano.
 
@@ -27,7 +27,7 @@ apps/
   command-center-prototype/
 src/
   BuildingBlocks/
-    DroneShield.BuildingBlocks/
+    AirSecurityCity.BuildingBlocks/
   Services/
     SensorGateway.Api/
     Fusion.Api/
@@ -76,7 +76,7 @@ Especificacoes iniciais dos modulos MVP:
 
 ```bash
 dotnet restore
-dotnet build DroneShield.sln
+dotnet build AirSecurityCity.sln
 ```
 
 2. Subir servicos (terminais separados):

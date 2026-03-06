@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: DroneShield Sensor Gateway API
+  title: Air Security City Sensor Gateway API
   version: 0.1.0
 paths:
   /health:
