@@ -38,6 +38,7 @@ src/
 docs/
   drone-xone-airspace-blueprint.md
   feature-matrix.md
+  p0-execution-backlog.md
   architecture.md
   mvp-roadmap.md
   event-flow.md
@@ -83,6 +84,12 @@ Documento completo da visao de plataforma e capacidades:
 Priorizacao executavel das funcionalidades por fase:
 
 - `docs/feature-matrix.md`
+
+## Backlog P0
+
+Plano tecnico detalhado para concluir o MVP operacional:
+
+- `docs/p0-execution-backlog.md`
 
 ## Como rodar localmente
 
