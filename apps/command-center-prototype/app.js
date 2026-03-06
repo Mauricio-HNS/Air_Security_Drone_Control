@@ -1,4 +1,7 @@
+const API_BASE = "http://127.0.0.1:5105";
+
 const state = {
+  liveMode: false,
   tracks: [
     { id: "T-101", x: 22, y: 48, threat: "MEDIUM", confidence: 0.73, speed: 8.2 },
     { id: "T-102", x: 52, y: 30, threat: "LOW", confidence: 0.89, speed: 3.4 },
@@ -38,6 +41,7 @@ const sensorGrid = document.getElementById("sensor-grid");
 const replaySlider = document.getElementById("replay-slider");
 const replayOutput = document.getElementById("replay-output");
 const simulateBtn = document.getElementById("simulate-btn");
+const connectBtn = document.getElementById("connect-btn");
 
 const title = document.getElementById("view-title");
 const subtitle = document.getElementById("view-subtitle");
@@ -57,22 +61,60 @@ function setClock() {
   opsTime.textContent = now.toLocaleTimeString("pt-BR");
 }
 
+function clampToMap(value, min, max, fallback) {
+  if (max <= min) return fallback;
+  const pct = ((value - min) / (max - min)) * 70 + 15;
+  return Math.min(90, Math.max(10, pct));
+}
+
+function normalizeTrackPosition(track, bounds) {
+  if (typeof track.x === "number" && typeof track.y === "number") {
+    return { x: track.x, y: track.y };
+  }
+
+  if (!track.position) {
+    return { x: 50, y: 50 };
+  }
+
+  const x = clampToMap(track.position.longitude, bounds.minLon, bounds.maxLon, 50);
+  const y = clampToMap(track.position.latitude, bounds.minLat, bounds.maxLat, 50);
+  return { x, y };
+}
+
 function renderMap() {
   mapCanvas.querySelectorAll(".track").forEach((node) => node.remove());
 
+  const coords = state.tracks
+    .map((t) => t.position)
+    .filter(Boolean);
+
+  const bounds = {
+    minLat: Math.min(...coords.map((c) => c.latitude), -23.7),
+    maxLat: Math.max(...coords.map((c) => c.latitude), -23.4),
+    minLon: Math.min(...coords.map((c) => c.longitude), -46.8),
+    maxLon: Math.max(...coords.map((c) => c.longitude), -46.4)
+  };
+
   state.tracks.forEach((track) => {
+    const pos = normalizeTrackPosition(track, bounds);
     const el = document.createElement("div");
-    el.className = `track ${track.threat === "HIGH" ? "high" : ""}`;
-    el.style.left = `${track.x}%`;
-    el.style.top = `${track.y}%`;
+    el.className = `track ${track.threat === "HIGH" || track.threat === "CRITICAL" ? "high" : ""}`;
+    el.style.left = `${pos.x}%`;
+    el.style.top = `${pos.y}%`;
     el.title = `${track.id} | ${track.threat} | conf ${Math.round(track.confidence * 100)}%`;
     mapCanvas.appendChild(el);
   });
 
+  const avgConfidence = state.tracks.length
+    ? Math.round((state.tracks.reduce((a, b) => a + b.confidence, 0) / state.tracks.length) * 100)
+    : 0;
+
   document.getElementById("kpi-tracks").textContent = String(state.tracks.length);
   document.getElementById("kpi-incidents").textContent = String(state.incidents.length);
-  document.getElementById("kpi-threat").textContent = state.tracks.some((t) => t.threat === "HIGH") ? "HIGH" : "MEDIUM";
-  document.getElementById("kpi-confidence").textContent = `${Math.round(state.tracks.reduce((a,b)=>a+b.confidence,0) / state.tracks.length * 100)}%`;
+  document.getElementById("kpi-threat").textContent = state.tracks.some((t) => t.threat === "HIGH" || t.threat === "CRITICAL")
+    ? "HIGH"
+    : "MEDIUM";
+  document.getElementById("kpi-confidence").textContent = `${avgConfidence}%`;
 }
 
 function renderIncidents() {
@@ -80,7 +122,7 @@ function renderIncidents() {
 
   state.incidents.forEach((item) => {
     const el = document.createElement("article");
-    el.className = `incident ${item.level === "HIGH" ? "high" : ""}`;
+    el.className = `incident ${item.level === "HIGH" || item.level === "CRITICAL" ? "high" : ""}`;
     el.innerHTML = `
       <strong>${item.id} • ${item.level}</strong>
       <p>${item.summary}</p>
@@ -139,6 +181,10 @@ function switchView(target) {
 }
 
 function simulateEvent() {
+  if (state.liveMode) {
+    return;
+  }
+
   const newTrack = {
     id: `T-${Math.floor(Math.random() * 900 + 100)}`,
     x: Math.random() * 78 + 10,
@@ -172,15 +218,111 @@ function simulateEvent() {
   renderIncidents();
 }
 
+function mapHealthToDot(health) {
+  const value = (health || "").toLowerCase();
+  if (value === "online") return "online";
+  if (value === "warning") return "warn";
+  return "offline";
+}
+
+async function refreshFromApi() {
+  const [tracksRes, incidentsRes, sensorsRes] = await Promise.all([
+    fetch(`${API_BASE}/api/tracks?limit=30`),
+    fetch(`${API_BASE}/api/incidents?limit=30`),
+    fetch(`${API_BASE}/api/sensors/status`)
+  ]);
+
+  if (!tracksRes.ok || !incidentsRes.ok || !sensorsRes.ok) {
+    throw new Error("Failed to fetch live data from API.");
+  }
+
+  const tracksData = await tracksRes.json();
+  const incidentsData = await incidentsRes.json();
+  const sensorsData = await sensorsRes.json();
+
+  state.tracks = tracksData.map((t) => ({
+    id: t.trackId?.slice(0, 8) || "TRACK",
+    threat: "MEDIUM",
+    confidence: t.confidence ?? 0,
+    speed: t.estimatedSpeedMps ?? 0,
+    position: t.estimatedPosition
+      ? {
+          latitude: t.estimatedPosition.latitude,
+          longitude: t.estimatedPosition.longitude
+        }
+      : null
+  }));
+
+  state.incidents = incidentsData.map((i) => ({
+    id: i.incidentId?.slice(0, 8) || "INCIDENT",
+    zone: i.zone || "Unknown",
+    level: i.status === "Open" ? "HIGH" : "MEDIUM",
+    createdAt: new Date(i.createdAtUtc).toLocaleTimeString("pt-BR"),
+    summary: `Track ${String(i.trackId || "").slice(0, 8)} em ${i.zone || "zona"} (${i.status}).`
+  }));
+
+  state.sensors = sensorsData.map((s) => ({
+    id: s.sensorNodeId,
+    type: s.sensorType,
+    status: mapHealthToDot(s.health),
+    quality: Math.round(s.signalQuality ?? 0)
+  }));
+
+  if (state.incidents.length > 0) {
+    opsStatus.textContent = "ALERTA VERMELHO";
+    opsStatus.style.color = "#f05d23";
+  } else {
+    opsStatus.textContent = "MONITORAMENTO";
+    opsStatus.style.color = "#20bf6b";
+  }
+
+  renderMap();
+  renderIncidents();
+  renderSensors();
+}
+
+async function toggleLiveMode() {
+  state.liveMode = !state.liveMode;
+  connectBtn.textContent = state.liveMode ? "Modo Live: ON" : "Modo Live: OFF";
+  simulateBtn.disabled = state.liveMode;
+
+  if (!state.liveMode) {
+    return;
+  }
+
+  try {
+    await refreshFromApi();
+  } catch {
+    state.liveMode = false;
+    connectBtn.textContent = "Modo Live: OFF";
+    simulateBtn.disabled = false;
+  }
+}
+
 navBtns.forEach((btn) => {
   btn.addEventListener("click", () => switchView(btn.dataset.view));
 });
 
 simulateBtn.addEventListener("click", simulateEvent);
+connectBtn.addEventListener("click", toggleLiveMode);
 replaySlider.addEventListener("input", renderReplay);
 
 setClock();
 setInterval(setClock, 1000);
+setInterval(async () => {
+  if (!state.liveMode) {
+    return;
+  }
+
+  try {
+    await refreshFromApi();
+  } catch {
+    state.liveMode = false;
+    connectBtn.textContent = "Modo Live: OFF";
+    simulateBtn.disabled = false;
+  }
+}, 4000);
+
 renderMap();
 renderIncidents();
 renderSensors();
