@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: Air Security City Command Center API
+  title: Air Security Drone Control Command Center API
   version: 0.1.0
 paths:
   /health:

@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: Air Security City Fusion API
+  title: Air Security Drone Control Fusion API
   version: 0.1.0
 paths:
   /health:

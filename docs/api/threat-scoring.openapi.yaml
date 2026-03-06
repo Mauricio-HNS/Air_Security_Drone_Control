@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: Air Security City Threat Scoring API
+  title: Air Security Drone Control Threat Scoring API
   version: 0.1.0
 paths:
   /health:
