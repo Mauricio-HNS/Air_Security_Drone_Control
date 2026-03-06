@@ -1,0 +1,80 @@
+openapi: 3.0.3
+info:
+  title: DroneShield Sensor Gateway API
+  version: 0.1.0
+paths:
+  /health:
+    get:
+      summary: Health check
+      responses:
+        '200':
+          description: OK
+  /api/sensors/detections:
+    post:
+      summary: Ingest detection event
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateDetectionRequest'
+      responses:
+        '201':
+          description: Detection accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DetectionEvent'
+    get:
+      summary: List latest detections
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 1000
+      responses:
+        '200':
+          description: Latest detections
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DetectionEvent'
+components:
+  schemas:
+    GeoPoint:
+      type: object
+      required: [latitude, longitude]
+      properties:
+        latitude: { type: number, format: double }
+        longitude: { type: number, format: double }
+        altitudeMeters: { type: number, format: double, nullable: true }
+    CreateDetectionRequest:
+      type: object
+      required: [sensorNodeId, sensorType, classification, latitude, longitude, confidence]
+      properties:
+        sensorNodeId: { type: string }
+        sensorType:
+          type: string
+          enum: [Camera, Acoustic, Rf, Radar, ExternalApi]
+        classification:
+          type: string
+          enum: [Drone, Bird, Helicopter, RandomNoise, Interference, Unknown]
+        latitude: { type: number, format: double }
+        longitude: { type: number, format: double }
+        altitudeMeters: { type: number, format: double, nullable: true }
+        confidence: { type: number, format: double, minimum: 0, maximum: 1 }
+        headingDegrees: { type: number, format: double, nullable: true }
+        speedMps: { type: number, format: double, nullable: true }
+    DetectionEvent:
+      allOf:
+        - $ref: '#/components/schemas/CreateDetectionRequest'
+        - type: object
+          required: [detectionId, position, timestampUtc]
+          properties:
+            detectionId: { type: string, format: uuid }
+            position: { $ref: '#/components/schemas/GeoPoint' }
+            timestampUtc: { type: string, format: date-time }

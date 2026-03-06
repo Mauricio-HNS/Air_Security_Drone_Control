@@ -60,6 +60,16 @@ Acesso:
 
 - `http://127.0.0.1:4173`
 
+## Contratos de API (OpenAPI)
+
+Especificacoes iniciais dos modulos MVP:
+
+- `docs/api/sensor-gateway.openapi.yaml`
+- `docs/api/fusion.openapi.yaml`
+- `docs/api/threat-scoring.openapi.yaml`
+- `docs/api/incidents.openapi.yaml`
+- `docs/api/command-center.openapi.yaml`
+
 ## Como rodar localmente
 
 1. Restaurar e compilar:

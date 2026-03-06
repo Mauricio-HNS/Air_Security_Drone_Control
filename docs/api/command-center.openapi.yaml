@@ -1,0 +1,95 @@
+openapi: 3.0.3
+info:
+  title: DroneShield Command Center API
+  version: 0.1.0
+paths:
+  /health:
+    get:
+      summary: Health check
+      responses:
+        '200': { description: OK }
+  /api/projections/tracks:
+    post:
+      summary: Project fused track to command center read model
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FusedTrack'
+      responses:
+        '202':
+          description: Projection accepted
+  /api/projections/threats:
+    post:
+      summary: Project threat assessment to command center read model
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ThreatAssessment'
+      responses:
+        '202':
+          description: Projection accepted
+  /api/projections/incidents:
+    post:
+      summary: Project incident case to command center read model
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IncidentCase'
+      responses:
+        '202':
+          description: Projection accepted
+  /api/overview:
+    get:
+      summary: Get tactical overview for dashboard
+      responses:
+        '200':
+          description: Tactical snapshot
+components:
+  schemas:
+    GeoPoint:
+      type: object
+      properties:
+        latitude: { type: number, format: double }
+        longitude: { type: number, format: double }
+        altitudeMeters: { type: number, format: double, nullable: true }
+    FusedTrack:
+      type: object
+      properties:
+        trackId: { type: string, format: uuid }
+        detectionIds:
+          type: array
+          items: { type: string, format: uuid }
+        estimatedPosition: { $ref: '#/components/schemas/GeoPoint' }
+        estimatedSpeedMps: { type: number, format: double }
+        estimatedHeadingDegrees: { type: number, format: double }
+        confidence: { type: number, format: double }
+        lastUpdateUtc: { type: string, format: date-time }
+    ThreatAssessment:
+      type: object
+      properties:
+        assessmentId: { type: string, format: uuid }
+        trackId: { type: string, format: uuid }
+        score: { type: number, format: double }
+        level:
+          type: string
+          enum: [Low, Medium, High, Critical]
+        summary: { type: string }
+        timestampUtc: { type: string, format: date-time }
+    IncidentCase:
+      type: object
+      properties:
+        incidentId: { type: string, format: uuid }
+        trackId: { type: string, format: uuid }
+        threatAssessmentId: { type: string, format: uuid }
+        status:
+          type: string
+          enum: [Open, UnderInvestigation, Resolved, Dismissed]
+        zone: { type: string }
+        createdAtUtc: { type: string, format: date-time }
+        closedAtUtc: { type: string, format: date-time, nullable: true }

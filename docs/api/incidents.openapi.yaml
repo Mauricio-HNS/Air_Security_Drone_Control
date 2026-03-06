@@ -1,0 +1,85 @@
+openapi: 3.0.3
+info:
+  title: DroneShield Incidents API
+  version: 0.1.0
+paths:
+  /health:
+    get:
+      summary: Health check
+      responses:
+        '200': { description: OK }
+  /api/incidents/open:
+    post:
+      summary: Open an incident case
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [trackId, threatAssessmentId, zone]
+              properties:
+                trackId: { type: string, format: uuid }
+                threatAssessmentId: { type: string, format: uuid }
+                zone: { type: string }
+      responses:
+        '201':
+          description: Incident opened
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IncidentCase'
+  /api/incidents/{incidentId}/status:
+    patch:
+      summary: Update incident status
+      parameters:
+        - in: path
+          name: incidentId
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status:
+                  type: string
+                  enum: [Open, UnderInvestigation, Resolved, Dismissed]
+      responses:
+        '200':
+          description: Incident updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IncidentCase'
+  /api/incidents:
+    get:
+      summary: List incidents
+      responses:
+        '200':
+          description: Latest incidents
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/IncidentCase'
+components:
+  schemas:
+    IncidentCase:
+      type: object
+      properties:
+        incidentId: { type: string, format: uuid }
+        trackId: { type: string, format: uuid }
+        threatAssessmentId: { type: string, format: uuid }
+        status:
+          type: string
+          enum: [Open, UnderInvestigation, Resolved, Dismissed]
+        zone: { type: string }
+        createdAtUtc: { type: string, format: date-time }
+        closedAtUtc: { type: string, format: date-time, nullable: true }
