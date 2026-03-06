@@ -36,6 +36,7 @@ src/
   CommandCenter/
     CommandCenter.Api/
 docs/
+  drone-xone-airspace-blueprint.md
   architecture.md
   mvp-roadmap.md
   event-flow.md
@@ -69,6 +70,12 @@ Especificacoes iniciais dos modulos MVP:
 - `docs/api/threat-scoring.openapi.yaml`
 - `docs/api/incidents.openapi.yaml`
 - `docs/api/command-center.openapi.yaml`
+
+## Blueprint do Produto
+
+Documento completo da visao de plataforma e capacidades:
+
+- `docs/drone-xone-airspace-blueprint.md`
 
 ## Como rodar localmente
 
