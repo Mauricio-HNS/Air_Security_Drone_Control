@@ -3,6 +3,7 @@ using AirSecurityDroneControl.BuildingBlocks.Contracts;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSingleton<ConcurrentDictionary<Guid, DetectionEvent>>();
+builder.Services.AddSingleton<ConcurrentDictionary<string, SensorNodeStatus>>();
 
 var app = builder.Build();
 
@@ -17,7 +18,8 @@ app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
 
 app.MapPost("/api/sensors/detections", (
     CreateDetectionRequest request,
-    ConcurrentDictionary<Guid, DetectionEvent> store) =>
+    ConcurrentDictionary<Guid, DetectionEvent> store,
+    ConcurrentDictionary<string, SensorNodeStatus> sensorStatus) =>
 {
     var detection = new DetectionEvent(
         DetectionId: Guid.NewGuid(),
@@ -31,6 +33,13 @@ app.MapPost("/api/sensors/detections", (
         SpeedMps: request.SpeedMps);
 
     store[detection.DetectionId] = detection;
+    sensorStatus[detection.SensorNodeId] = new SensorNodeStatus(
+        SensorNodeId: detection.SensorNodeId,
+        SensorType: detection.SensorType,
+        Health: SensorNodeHealth.Online,
+        LastSeenUtc: detection.TimestampUtc,
+        SignalQuality: Math.Round(detection.Confidence * 100, 2));
+
     return Results.Created($"/api/sensors/detections/{detection.DetectionId}", detection);
 });
 
@@ -44,6 +53,28 @@ app.MapGet("/api/sensors/detections", (
         .ToArray();
 
     return Results.Ok(data);
+});
+
+app.MapGet("/api/sensors/status", (
+    ConcurrentDictionary<string, SensorNodeStatus> sensorStatus) =>
+{
+    var statuses = sensorStatus.Values
+        .OrderByDescending(x => x.LastSeenUtc)
+        .ToArray();
+
+    return Results.Ok(statuses);
+});
+
+app.MapGet("/api/sensors/status/{sensorNodeId}", (
+    string sensorNodeId,
+    ConcurrentDictionary<string, SensorNodeStatus> sensorStatus) =>
+{
+    if (!sensorStatus.TryGetValue(sensorNodeId, out var status))
+    {
+        return Results.NotFound();
+    }
+
+    return Results.Ok(status);
 });
 
 app.Run();

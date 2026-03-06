@@ -44,6 +44,69 @@ paths:
       responses:
         '202':
           description: Projection accepted
+  /api/projections/sensors:
+    post:
+      summary: Project sensor node status to command center read model
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SensorNodeStatus'
+      responses:
+        '202':
+          description: Projection accepted
+  /api/tracks:
+    get:
+      summary: List tracks for tactical view
+      responses:
+        '200':
+          description: Tracks list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FusedTrack'
+  /api/incidents:
+    get:
+      summary: List incidents for tactical view
+      responses:
+        '200':
+          description: Incidents list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/IncidentCase'
+  /api/sensors/status:
+    get:
+      summary: List sensor status for tactical view
+      responses:
+        '200':
+          description: Sensor status list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SensorNodeStatus'
+  /api/replay/{incidentId}:
+    get:
+      summary: Get replay timeline for incident
+      parameters:
+        - in: path
+          name: incidentId
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Replay payload
+        '404':
+          description: Incident not found
   /api/overview:
     get:
       summary: Get tactical overview for dashboard
@@ -93,3 +156,15 @@ components:
         zone: { type: string }
         createdAtUtc: { type: string, format: date-time }
         closedAtUtc: { type: string, format: date-time, nullable: true }
+    SensorNodeStatus:
+      type: object
+      properties:
+        sensorNodeId: { type: string }
+        sensorType:
+          type: string
+          enum: [Camera, Acoustic, Rf, Radar, ExternalApi, AdsB, AuthorizedTelemetry]
+        health:
+          type: string
+          enum: [Online, Warning, Offline]
+        lastSeenUtc: { type: string, format: date-time }
+        signalQuality: { type: number, format: double }

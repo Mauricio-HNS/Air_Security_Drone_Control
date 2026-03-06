@@ -43,6 +43,36 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/DetectionEvent'
+  /api/sensors/status:
+    get:
+      summary: List sensor node status
+      responses:
+        '200':
+          description: Sensor status list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SensorNodeStatus'
+  /api/sensors/status/{sensorNodeId}:
+    get:
+      summary: Get sensor node status by id
+      parameters:
+        - in: path
+          name: sensorNodeId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Sensor node status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SensorNodeStatus'
+        '404':
+          description: Sensor not found
 components:
   schemas:
     GeoPoint:
@@ -59,7 +89,7 @@ components:
         sensorNodeId: { type: string }
         sensorType:
           type: string
-          enum: [Camera, Acoustic, Rf, Radar, ExternalApi]
+          enum: [Camera, Acoustic, Rf, Radar, ExternalApi, AdsB, AuthorizedTelemetry]
         classification:
           type: string
           enum: [Drone, Bird, Helicopter, RandomNoise, Interference, Unknown]
@@ -78,3 +108,15 @@ components:
             detectionId: { type: string, format: uuid }
             position: { $ref: '#/components/schemas/GeoPoint' }
             timestampUtc: { type: string, format: date-time }
+    SensorNodeStatus:
+      type: object
+      properties:
+        sensorNodeId: { type: string }
+        sensorType:
+          type: string
+          enum: [Camera, Acoustic, Rf, Radar, ExternalApi, AdsB, AuthorizedTelemetry]
+        health:
+          type: string
+          enum: [Online, Warning, Offline]
+        lastSeenUtc: { type: string, format: date-time }
+        signalQuality: { type: number, format: double }

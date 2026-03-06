@@ -6,7 +6,16 @@ public enum SensorType
     Acoustic,
     Rf,
     Radar,
-    ExternalApi
+    ExternalApi,
+    AdsB,
+    AuthorizedTelemetry
+}
+
+public enum SensorNodeHealth
+{
+    Online,
+    Warning,
+    Offline
 }
 
 public enum ClassificationType
@@ -80,3 +89,10 @@ public record IncidentCase(
     string Zone,
     DateTimeOffset CreatedAtUtc,
     DateTimeOffset? ClosedAtUtc = null);
+
+public record SensorNodeStatus(
+    string SensorNodeId,
+    SensorType SensorType,
+    SensorNodeHealth Health,
+    DateTimeOffset LastSeenUtc,
+    double SignalQuality);
