@@ -39,9 +39,14 @@ docs/
   drone-xone-airspace-blueprint.md
   feature-matrix.md
   p0-execution-backlog.md
+  local-runbook.md
   architecture.md
   mvp-roadmap.md
   event-flow.md
+scripts/
+  run-p0-stack.sh
+  stop-p0-stack.sh
+  p0-e2e-demo.sh
 docker-compose.yml
 ```
 
@@ -91,6 +96,12 @@ Plano tecnico detalhado para concluir o MVP operacional:
 
 - `docs/p0-execution-backlog.md`
 
+## Runbook Local
+
+Guia rapido de operacao e troubleshooting local:
+
+- `docs/local-runbook.md`
+
 ## Como rodar localmente
 
 1. Restaurar e compilar:
@@ -100,7 +111,25 @@ dotnet restore
 dotnet build AirSecurityDroneControl.sln
 ```
 
-2. Subir servicos (terminais separados):
+2. Subir stack P0 com um comando:
+
+```bash
+./scripts/run-p0-stack.sh
+```
+
+3. Rodar demo fim a fim:
+
+```bash
+./scripts/p0-e2e-demo.sh
+```
+
+4. Parar stack:
+
+```bash
+./scripts/stop-p0-stack.sh
+```
+
+Opcional (manual): subir servicos em terminais separados:
 
 ```bash
 dotnet run --project src/Services/SensorGateway.Api --urls http://127.0.0.1:5101
@@ -110,7 +139,7 @@ dotnet run --project src/Services/Incidents.Api --urls http://127.0.0.1:5104
 dotnet run --project src/CommandCenter/CommandCenter.Api --urls http://127.0.0.1:5105
 ```
 
-3. Verificacao rapida:
+Verificacao rapida:
 
 ```bash
 curl -s http://127.0.0.1:5101/health
