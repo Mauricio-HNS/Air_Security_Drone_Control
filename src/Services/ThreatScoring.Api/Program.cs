@@ -1,10 +1,15 @@
 using System.Collections.Concurrent;
 using AirSecurityDroneControl.BuildingBlocks.Contracts;
+using AirSecurityDroneControl.BuildingBlocks.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSingleton<ConcurrentDictionary<Guid, ThreatAssessment>>();
+var dataDir = Path.Combine(Directory.GetCurrentDirectory(), ".runtime", "data", "threat-scoring");
+builder.Services.AddSingleton(new JsonFileStore<ThreatAssessment>(dataDir, "assessments.json"));
+builder.Services.AddSingleton(new EventLog(dataDir));
 
 var app = builder.Build();
+SeedData(app.Services);
 
 app.MapGet("/", () => Results.Ok(new
 {
@@ -15,9 +20,12 @@ app.MapGet("/", () => Results.Ok(new
 
 app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
 
-app.MapPost("/api/threat/assess", (
+app.MapPost("/api/threat/assess", async (
     AssessThreatRequest request,
-    ConcurrentDictionary<Guid, ThreatAssessment> store) =>
+    ConcurrentDictionary<Guid, ThreatAssessment> store,
+    JsonFileStore<ThreatAssessment> assessmentStore,
+    EventLog eventLog,
+    CancellationToken ct) =>
 {
     var score = ThreatScoreCalculator.Calculate(request.Track, request.Zone);
     var level = score switch
@@ -40,6 +48,9 @@ app.MapPost("/api/threat/assess", (
         TimestampUtc: DateTimeOffset.UtcNow);
 
     store[assessment.AssessmentId] = assessment;
+    await assessmentStore.WriteAllAsync(store.Values.OrderByDescending(x => x.TimestampUtc), ct);
+    await eventLog.AppendAsync(
+        new DomainEvent(Guid.NewGuid(), "ThreatAssessed", DateTimeOffset.UtcNow, assessment), ct);
     return Results.Ok(assessment);
 });
 
@@ -56,6 +67,18 @@ app.MapGet("/api/threat/assessments", (
 });
 
 app.Run();
+
+static void SeedData(IServiceProvider services)
+{
+    using var scope = services.CreateScope();
+    var items = scope.ServiceProvider.GetRequiredService<ConcurrentDictionary<Guid, ThreatAssessment>>();
+    var store = scope.ServiceProvider.GetRequiredService<JsonFileStore<ThreatAssessment>>();
+
+    foreach (var assessment in store.ReadAllAsync().GetAwaiter().GetResult())
+    {
+        items[assessment.AssessmentId] = assessment;
+    }
+}
 
 public record AssessThreatRequest(FusedTrack Track, ProtectedZone Zone);
 

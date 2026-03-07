@@ -1,11 +1,19 @@
 using System.Collections.Concurrent;
 using AirSecurityDroneControl.BuildingBlocks.Contracts;
+using AirSecurityDroneControl.BuildingBlocks.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSingleton<ConcurrentDictionary<Guid, DetectionEvent>>();
 builder.Services.AddSingleton<ConcurrentDictionary<string, SensorNodeStatus>>();
 
+var dataDir = Path.Combine(Directory.GetCurrentDirectory(), ".runtime", "data", "sensor-gateway");
+builder.Services.AddSingleton(new JsonFileStore<DetectionEvent>(dataDir, "detections.json"));
+builder.Services.AddSingleton(new JsonFileStore<SensorNodeStatus>(dataDir, "sensor-status.json"));
+builder.Services.AddSingleton(new EventLog(dataDir));
+
 var app = builder.Build();
+
+SeedData(app.Services);
 
 app.MapGet("/", () => Results.Ok(new
 {
@@ -16,10 +24,14 @@ app.MapGet("/", () => Results.Ok(new
 
 app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
 
-app.MapPost("/api/sensors/detections", (
+app.MapPost("/api/sensors/detections", async (
     CreateDetectionRequest request,
     ConcurrentDictionary<Guid, DetectionEvent> store,
-    ConcurrentDictionary<string, SensorNodeStatus> sensorStatus) =>
+    ConcurrentDictionary<string, SensorNodeStatus> sensorStatus,
+    JsonFileStore<DetectionEvent> detectionStore,
+    JsonFileStore<SensorNodeStatus> sensorStore,
+    EventLog eventLog,
+    CancellationToken ct) =>
 {
     var detection = new DetectionEvent(
         DetectionId: Guid.NewGuid(),
@@ -39,6 +51,11 @@ app.MapPost("/api/sensors/detections", (
         Health: SensorNodeHealth.Online,
         LastSeenUtc: detection.TimestampUtc,
         SignalQuality: Math.Round(detection.Confidence * 100, 2));
+
+    await detectionStore.WriteAllAsync(store.Values.OrderByDescending(x => x.TimestampUtc), ct);
+    await sensorStore.WriteAllAsync(sensorStatus.Values.OrderByDescending(x => x.LastSeenUtc), ct);
+    await eventLog.AppendAsync(
+        new DomainEvent(Guid.NewGuid(), "DetectionReceived", DateTimeOffset.UtcNow, detection), ct);
 
     return Results.Created($"/api/sensors/detections/{detection.DetectionId}", detection);
 });
@@ -78,6 +95,25 @@ app.MapGet("/api/sensors/status/{sensorNodeId}", (
 });
 
 app.Run();
+
+static void SeedData(IServiceProvider services)
+{
+    using var scope = services.CreateScope();
+    var detections = scope.ServiceProvider.GetRequiredService<ConcurrentDictionary<Guid, DetectionEvent>>();
+    var sensorStatuses = scope.ServiceProvider.GetRequiredService<ConcurrentDictionary<string, SensorNodeStatus>>();
+    var detectionStore = scope.ServiceProvider.GetRequiredService<JsonFileStore<DetectionEvent>>();
+    var sensorStore = scope.ServiceProvider.GetRequiredService<JsonFileStore<SensorNodeStatus>>();
+
+    foreach (var detection in detectionStore.ReadAllAsync().GetAwaiter().GetResult())
+    {
+        detections[detection.DetectionId] = detection;
+    }
+
+    foreach (var status in sensorStore.ReadAllAsync().GetAwaiter().GetResult())
+    {
+        sensorStatuses[status.SensorNodeId] = status;
+    }
+}
 
 public record CreateDetectionRequest(
     string SensorNodeId,

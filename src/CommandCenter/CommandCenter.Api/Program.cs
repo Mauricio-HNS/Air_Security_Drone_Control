@@ -1,10 +1,18 @@
 using System.Collections.Concurrent;
 using AirSecurityDroneControl.BuildingBlocks.Contracts;
+using AirSecurityDroneControl.BuildingBlocks.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSingleton<CommandCenterState>();
+var dataDir = Path.Combine(Directory.GetCurrentDirectory(), ".runtime", "data", "command-center");
+builder.Services.AddSingleton(new JsonFileStore<FusedTrack>(dataDir, "tracks.json"));
+builder.Services.AddSingleton(new JsonFileStore<ThreatAssessment>(dataDir, "threats.json"));
+builder.Services.AddSingleton(new JsonFileStore<IncidentCase>(dataDir, "incidents.json"));
+builder.Services.AddSingleton(new JsonFileStore<SensorNodeStatus>(dataDir, "sensors.json"));
+builder.Services.AddSingleton(new EventLog(dataDir));
 
 var app = builder.Build();
+SeedData(app.Services);
 
 app.MapGet("/", () => Results.Ok(new
 {
@@ -15,27 +23,55 @@ app.MapGet("/", () => Results.Ok(new
 
 app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
 
-app.MapPost("/api/projections/tracks", (FusedTrack track, CommandCenterState state) =>
+app.MapPost("/api/projections/tracks", async (
+    FusedTrack track,
+    CommandCenterState state,
+    JsonFileStore<FusedTrack> store,
+    EventLog eventLog,
+    CancellationToken ct) =>
 {
     state.Tracks[track.TrackId] = track;
+    await store.WriteAllAsync(state.Tracks.Values.OrderByDescending(x => x.LastUpdateUtc), ct);
+    await eventLog.AppendAsync(new DomainEvent(Guid.NewGuid(), "TrackProjected", DateTimeOffset.UtcNow, track), ct);
     return Results.Accepted($"/api/projections/tracks/{track.TrackId}", track);
 });
 
-app.MapPost("/api/projections/threats", (ThreatAssessment threat, CommandCenterState state) =>
+app.MapPost("/api/projections/threats", async (
+    ThreatAssessment threat,
+    CommandCenterState state,
+    JsonFileStore<ThreatAssessment> store,
+    EventLog eventLog,
+    CancellationToken ct) =>
 {
     state.Threats[threat.AssessmentId] = threat;
+    await store.WriteAllAsync(state.Threats.Values.OrderByDescending(x => x.TimestampUtc), ct);
+    await eventLog.AppendAsync(new DomainEvent(Guid.NewGuid(), "ThreatProjected", DateTimeOffset.UtcNow, threat), ct);
     return Results.Accepted($"/api/projections/threats/{threat.AssessmentId}", threat);
 });
 
-app.MapPost("/api/projections/incidents", (IncidentCase incident, CommandCenterState state) =>
+app.MapPost("/api/projections/incidents", async (
+    IncidentCase incident,
+    CommandCenterState state,
+    JsonFileStore<IncidentCase> store,
+    EventLog eventLog,
+    CancellationToken ct) =>
 {
     state.Incidents[incident.IncidentId] = incident;
+    await store.WriteAllAsync(state.Incidents.Values.OrderByDescending(x => x.CreatedAtUtc), ct);
+    await eventLog.AppendAsync(new DomainEvent(Guid.NewGuid(), "IncidentProjected", DateTimeOffset.UtcNow, incident), ct);
     return Results.Accepted($"/api/projections/incidents/{incident.IncidentId}", incident);
 });
 
-app.MapPost("/api/projections/sensors", (SensorNodeStatus sensor, CommandCenterState state) =>
+app.MapPost("/api/projections/sensors", async (
+    SensorNodeStatus sensor,
+    CommandCenterState state,
+    JsonFileStore<SensorNodeStatus> store,
+    EventLog eventLog,
+    CancellationToken ct) =>
 {
     state.Sensors[sensor.SensorNodeId] = sensor;
+    await store.WriteAllAsync(state.Sensors.Values.OrderByDescending(x => x.LastSeenUtc), ct);
+    await eventLog.AppendAsync(new DomainEvent(Guid.NewGuid(), "SensorProjected", DateTimeOffset.UtcNow, sensor), ct);
     return Results.Accepted($"/api/projections/sensors/{sensor.SensorNodeId}", sensor);
 });
 
@@ -136,6 +172,36 @@ app.MapGet("/api/overview", (CommandCenterState state) =>
 });
 
 app.Run();
+
+static void SeedData(IServiceProvider services)
+{
+    using var scope = services.CreateScope();
+    var state = scope.ServiceProvider.GetRequiredService<CommandCenterState>();
+    var trackStore = scope.ServiceProvider.GetRequiredService<JsonFileStore<FusedTrack>>();
+    var threatStore = scope.ServiceProvider.GetRequiredService<JsonFileStore<ThreatAssessment>>();
+    var incidentStore = scope.ServiceProvider.GetRequiredService<JsonFileStore<IncidentCase>>();
+    var sensorStore = scope.ServiceProvider.GetRequiredService<JsonFileStore<SensorNodeStatus>>();
+
+    foreach (var track in trackStore.ReadAllAsync().GetAwaiter().GetResult())
+    {
+        state.Tracks[track.TrackId] = track;
+    }
+
+    foreach (var threat in threatStore.ReadAllAsync().GetAwaiter().GetResult())
+    {
+        state.Threats[threat.AssessmentId] = threat;
+    }
+
+    foreach (var incident in incidentStore.ReadAllAsync().GetAwaiter().GetResult())
+    {
+        state.Incidents[incident.IncidentId] = incident;
+    }
+
+    foreach (var sensor in sensorStore.ReadAllAsync().GetAwaiter().GetResult())
+    {
+        state.Sensors[sensor.SensorNodeId] = sensor;
+    }
+}
 
 public sealed class CommandCenterState
 {

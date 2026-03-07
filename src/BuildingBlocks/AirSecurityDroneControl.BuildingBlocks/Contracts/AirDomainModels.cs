@@ -96,3 +96,28 @@ public record SensorNodeStatus(
     SensorNodeHealth Health,
     DateTimeOffset LastSeenUtc,
     double SignalQuality);
+
+public record RulePolicy(
+    Guid RuleId,
+    string Name,
+    string Zone,
+    double MinThreatScore,
+    int MinDetections,
+    bool Enabled);
+
+public record NotificationMessage(
+    Guid NotificationId,
+    Guid IncidentId,
+    string Channel,
+    string Severity,
+    string Target,
+    string Message,
+    DateTimeOffset SentAtUtc);
+
+public record EvidenceItem(
+    Guid EvidenceId,
+    Guid IncidentId,
+    string EvidenceType,
+    string Content,
+    string Hash,
+    DateTimeOffset CreatedAtUtc);

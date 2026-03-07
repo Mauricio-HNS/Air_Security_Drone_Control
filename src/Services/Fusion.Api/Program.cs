@@ -1,10 +1,15 @@
 using System.Collections.Concurrent;
 using AirSecurityDroneControl.BuildingBlocks.Contracts;
+using AirSecurityDroneControl.BuildingBlocks.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSingleton<ConcurrentDictionary<Guid, FusedTrack>>();
+var dataDir = Path.Combine(Directory.GetCurrentDirectory(), ".runtime", "data", "fusion");
+builder.Services.AddSingleton(new JsonFileStore<FusedTrack>(dataDir, "tracks.json"));
+builder.Services.AddSingleton(new EventLog(dataDir));
 
 var app = builder.Build();
+SeedData(app.Services);
 
 app.MapGet("/", () => Results.Ok(new
 {
@@ -15,9 +20,12 @@ app.MapGet("/", () => Results.Ok(new
 
 app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
 
-app.MapPost("/api/fusion/fuse", (
+app.MapPost("/api/fusion/fuse", async (
     FuseDetectionsRequest request,
-    ConcurrentDictionary<Guid, FusedTrack> tracks) =>
+    ConcurrentDictionary<Guid, FusedTrack> tracks,
+    JsonFileStore<FusedTrack> trackStore,
+    EventLog eventLog,
+    CancellationToken ct) =>
 {
     if (request.Detections.Count == 0)
     {
@@ -56,6 +64,9 @@ app.MapPost("/api/fusion/fuse", (
         LastUpdateUtc: DateTimeOffset.UtcNow);
 
     tracks[track.TrackId] = track;
+    await trackStore.WriteAllAsync(tracks.Values.OrderByDescending(x => x.LastUpdateUtc), ct);
+    await eventLog.AppendAsync(
+        new DomainEvent(Guid.NewGuid(), "TrackFused", DateTimeOffset.UtcNow, track), ct);
     return Results.Ok(track);
 });
 
@@ -72,5 +83,17 @@ app.MapGet("/api/fusion/tracks", (
 });
 
 app.Run();
+
+static void SeedData(IServiceProvider services)
+{
+    using var scope = services.CreateScope();
+    var tracks = scope.ServiceProvider.GetRequiredService<ConcurrentDictionary<Guid, FusedTrack>>();
+    var store = scope.ServiceProvider.GetRequiredService<JsonFileStore<FusedTrack>>();
+
+    foreach (var track in store.ReadAllAsync().GetAwaiter().GetResult())
+    {
+        tracks[track.TrackId] = track;
+    }
+}
 
 public record FuseDetectionsRequest(IReadOnlyCollection<DetectionEvent> Detections);
