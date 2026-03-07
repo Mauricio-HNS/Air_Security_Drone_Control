@@ -56,6 +56,7 @@ Antes de fechar backend completo, o fluxo operacional esta sendo validado visual
 
 - `apps/command-center-prototype/index.html`
 - Mapa tatico, incidentes, sensores, replay e fluxo modular.
+- Modo Live para consumir dados reais do backend (`http://127.0.0.1:5105`).
 
 Execucao:
 
