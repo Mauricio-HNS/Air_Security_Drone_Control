@@ -48,11 +48,27 @@
           <article class="card"><span>Amenaza Maxima</span><strong id="kpi-threat">HIGH</strong></article>
           <article class="card"><span>Confianza Media</span><strong id="kpi-confidence">82%</strong></article>
         </div>
-        <div class="panel map">
-          <h3>Mapa de Vigilancia (simulado)</h3>
-          <div class="map-canvas" id="map-canvas">
-            <div class="zone sensitive" style="left: 58%; top: 40%; width: 180px; height: 180px;">Zona A (Sensible)</div>
-            <div class="zone" style="left: 18%; top: 62%; width: 140px; height: 140px;">Zona B</div>
+        <div class="overview-grid">
+          <div class="panel map">
+            <h3>Mapa de Vigilancia (simulado)</h3>
+            <div class="map-canvas" id="map-canvas">
+              <div class="zone sensitive" style="left: 58%; top: 40%; width: 180px; height: 180px;">Zona A (Sensible)</div>
+              <div class="zone" style="left: 18%; top: 62%; width: 140px; height: 140px;">Zona B</div>
+            </div>
+          </div>
+          <div class="panel radar">
+            <h3>Radar Tactico</h3>
+            <div class="radar-shell">
+              <canvas id="radar-canvas" width="520" height="520"></canvas>
+              <div class="radar-label radar-n">N</div>
+              <div class="radar-label radar-e">E</div>
+              <div class="radar-label radar-s">S</div>
+              <div class="radar-label radar-w">W</div>
+            </div>
+            <div class="radar-meta">
+              <span id="radar-track-count">0 tracks</span>
+              <span id="radar-mode">Modo: Vigilancia</span>
+            </div>
           </div>
         </div>
       </section>

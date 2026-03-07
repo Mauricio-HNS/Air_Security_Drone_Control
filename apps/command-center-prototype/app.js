@@ -42,11 +42,15 @@ const replaySlider = document.getElementById("replay-slider");
 const replayOutput = document.getElementById("replay-output");
 const simulateBtn = document.getElementById("simulate-btn");
 const connectBtn = document.getElementById("connect-btn");
+const radarCanvas = document.getElementById("radar-canvas");
+const radarTrackCount = document.getElementById("radar-track-count");
+const radarMode = document.getElementById("radar-mode");
 
 const title = document.getElementById("view-title");
 const subtitle = document.getElementById("view-subtitle");
 const opsStatus = document.getElementById("ops-status");
 const opsTime = document.getElementById("ops-time");
+const radarState = { angle: 0 };
 
 const titles = {
   overview: ["Mapa Tactico", "Vista en tiempo real de tracks, zonas y amenaza"],
@@ -84,16 +88,7 @@ function normalizeTrackPosition(track, bounds) {
 function renderMap() {
   mapCanvas.querySelectorAll(".track").forEach((node) => node.remove());
 
-  const coords = state.tracks
-    .map((t) => t.position)
-    .filter(Boolean);
-
-  const bounds = {
-    minLat: Math.min(...coords.map((c) => c.latitude), -23.7),
-    maxLat: Math.max(...coords.map((c) => c.latitude), -23.4),
-    minLon: Math.min(...coords.map((c) => c.longitude), -46.8),
-    maxLon: Math.max(...coords.map((c) => c.longitude), -46.4)
-  };
+  const bounds = computeBounds(state.tracks);
 
   state.tracks.forEach((track) => {
     const pos = normalizeTrackPosition(track, bounds);
@@ -115,6 +110,8 @@ function renderMap() {
     ? "HIGH"
     : "MEDIUM";
   document.getElementById("kpi-confidence").textContent = `${avgConfidence}%`;
+
+  renderRadar(bounds);
 }
 
 function renderIncidents() {
@@ -171,6 +168,102 @@ function renderPipeline() {
   pipeline.innerHTML = steps
     .map((item, i) => `<div class="step"><strong>${i + 1}. ${item[0]}</strong><p>${item[1]}</p></div>`)
     .join("");
+}
+
+function computeBounds(tracks) {
+  const coords = tracks.map((t) => t.position).filter(Boolean);
+  return {
+    minLat: Math.min(...coords.map((c) => c.latitude), -23.7),
+    maxLat: Math.max(...coords.map((c) => c.latitude), -23.4),
+    minLon: Math.min(...coords.map((c) => c.longitude), -46.8),
+    maxLon: Math.max(...coords.map((c) => c.longitude), -46.4)
+  };
+}
+
+function getTrackPlot(track, bounds) {
+  if (typeof track.x === "number" && typeof track.y === "number") {
+    return { xPct: track.x, yPct: track.y };
+  }
+
+  const pos = normalizeTrackPosition(track, bounds);
+  return { xPct: pos.x, yPct: pos.y };
+}
+
+function renderRadar(bounds) {
+  if (!radarCanvas) {
+    return;
+  }
+
+  const ctx = radarCanvas.getContext("2d");
+  const w = radarCanvas.width;
+  const h = radarCanvas.height;
+  const cx = w / 2;
+  const cy = h / 2;
+  const radius = Math.min(w, h) * 0.42;
+
+  ctx.clearRect(0, 0, w, h);
+
+  ctx.fillStyle = "rgba(2, 18, 30, 0.92)";
+  ctx.fillRect(0, 0, w, h);
+
+  for (let i = 1; i <= 4; i += 1) {
+    ctx.beginPath();
+    ctx.strokeStyle = `rgba(120, 220, 255, ${0.12 + i * 0.06})`;
+    ctx.lineWidth = 1;
+    ctx.arc(cx, cy, (radius / 4) * i, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+
+  ctx.beginPath();
+  ctx.strokeStyle = "rgba(120, 220, 255, 0.2)";
+  ctx.moveTo(cx - radius, cy);
+  ctx.lineTo(cx + radius, cy);
+  ctx.moveTo(cx, cy - radius);
+  ctx.lineTo(cx, cy + radius);
+  ctx.stroke();
+
+  const sweepStart = radarState.angle;
+  const sweepEnd = sweepStart + Math.PI / 3.4;
+  const gradient = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius);
+  gradient.addColorStop(0, "rgba(60, 255, 188, 0.32)");
+  gradient.addColorStop(1, "rgba(60, 255, 188, 0)");
+  ctx.fillStyle = gradient;
+  ctx.beginPath();
+  ctx.moveTo(cx, cy);
+  ctx.arc(cx, cy, radius, sweepStart, sweepEnd);
+  ctx.closePath();
+  ctx.fill();
+
+  const pulse = 2.6 + Math.sin(Date.now() / 220) * 1.1;
+  state.tracks.forEach((track) => {
+    const { xPct, yPct } = getTrackPlot(track, bounds);
+    const tx = ((xPct / 100) - 0.5) * (radius * 2) + cx;
+    const ty = ((yPct / 100) - 0.5) * (radius * 2) + cy;
+    const high = track.threat === "HIGH" || track.threat === "CRITICAL";
+
+    ctx.beginPath();
+    ctx.fillStyle = high ? "rgba(255, 108, 64, 0.95)" : "rgba(63, 235, 255, 0.95)";
+    ctx.arc(tx, ty, high ? 4.6 : 3.8, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.strokeStyle = high ? "rgba(255, 108, 64, 0.44)" : "rgba(63, 235, 255, 0.38)";
+    ctx.lineWidth = 1.25;
+    ctx.arc(tx, ty, 9 + pulse, 0, Math.PI * 2);
+    ctx.stroke();
+  });
+
+  radarTrackCount.textContent = `${state.tracks.length} tracks`;
+  radarMode.textContent = state.liveMode ? "Modo: Seguimiento en vivo" : "Modo: Simulacion tactica";
+}
+
+function radarTick() {
+  radarState.angle += 0.024;
+  if (radarState.angle > Math.PI * 2) {
+    radarState.angle = 0;
+  }
+  renderRadar(computeBounds(state.tracks));
+  window.requestAnimationFrame(radarTick);
 }
 
 function switchView(target) {
@@ -328,3 +421,4 @@ renderIncidents();
 renderSensors();
 renderReplay();
 renderPipeline();
+window.requestAnimationFrame(radarTick);
