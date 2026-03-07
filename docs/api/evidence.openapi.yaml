@@ -1,19 +1,37 @@
 openapi: 3.0.3
 info:
   title: Air Security Drone Control Evidence API
-  version: 0.1.0
+  version: 0.2.0
 paths:
   /health:
     get:
       summary: Health check
       responses:
         '200': { description: OK }
+  /metrics/basic:
+    get:
+      summary: Basic request metrics
+      responses:
+        '200': { description: OK }
   /api/evidence:
     post:
-      summary: Store evidence item with hash
+      summary: Store evidence with integrity hash
+      security:
+        - ApiKeyAuth: []
+          RoleHeader: []
       responses:
         '201': { description: Created }
     get:
-      summary: List evidence items
+      summary: List evidence
       responses:
         '200': { description: OK }
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+    RoleHeader:
+      type: apiKey
+      in: header
+      name: X-Role

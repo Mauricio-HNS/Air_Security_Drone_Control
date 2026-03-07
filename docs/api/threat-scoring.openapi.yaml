@@ -1,81 +1,40 @@
 openapi: 3.0.3
 info:
   title: Air Security Drone Control Threat Scoring API
-  version: 0.1.0
+  version: 0.2.0
 paths:
   /health:
     get:
       summary: Health check
       responses:
         '200': { description: OK }
+  /metrics/basic:
+    get:
+      summary: Basic request metrics
+      responses:
+        '200': { description: OK }
   /api/threat/assess:
     post:
-      summary: Compute threat assessment from track and protected zone
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [track, zone]
-              properties:
-                track: { $ref: '#/components/schemas/FusedTrack' }
-                zone: { $ref: '#/components/schemas/ProtectedZone' }
+      summary: Compute threat assessment
+      security:
+        - ApiKeyAuth: []
+          RoleHeader: []
       responses:
-        '200':
-          description: Threat assessed
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ThreatAssessment'
+        '200': { description: OK }
+        '401': { description: Unauthorized }
+        '403': { description: Forbidden }
   /api/threat/assessments:
     get:
-      summary: List latest assessments
+      summary: List assessments
       responses:
-        '200':
-          description: Latest assessments
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/ThreatAssessment'
+        '200': { description: OK }
 components:
-  schemas:
-    GeoPoint:
-      type: object
-      properties:
-        latitude: { type: number, format: double }
-        longitude: { type: number, format: double }
-        altitudeMeters: { type: number, format: double, nullable: true }
-    FusedTrack:
-      type: object
-      properties:
-        trackId: { type: string, format: uuid }
-        detectionIds:
-          type: array
-          items: { type: string, format: uuid }
-        estimatedPosition: { $ref: '#/components/schemas/GeoPoint' }
-        estimatedSpeedMps: { type: number, format: double }
-        estimatedHeadingDegrees: { type: number, format: double }
-        confidence: { type: number, format: double }
-        lastUpdateUtc: { type: string, format: date-time }
-    ProtectedZone:
-      type: object
-      properties:
-        zoneId: { type: string, format: uuid }
-        name: { type: string }
-        center: { $ref: '#/components/schemas/GeoPoint' }
-        radiusMeters: { type: number, format: double }
-        sensitive: { type: boolean }
-    ThreatAssessment:
-      type: object
-      properties:
-        assessmentId: { type: string, format: uuid }
-        trackId: { type: string, format: uuid }
-        score: { type: number, format: double }
-        level:
-          type: string
-          enum: [Low, Medium, High, Critical]
-        summary: { type: string }
-        timestampUtc: { type: string, format: date-time }
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+    RoleHeader:
+      type: apiKey
+      in: header
+      name: X-Role

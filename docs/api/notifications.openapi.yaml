@@ -1,16 +1,24 @@
 openapi: 3.0.3
 info:
   title: Air Security Drone Control Notifications API
-  version: 0.1.0
+  version: 0.2.0
 paths:
   /health:
     get:
       summary: Health check
       responses:
         '200': { description: OK }
+  /metrics/basic:
+    get:
+      summary: Basic request metrics
+      responses:
+        '200': { description: OK }
   /api/notifications/send:
     post:
-      summary: Send notification message
+      summary: Send notification
+      security:
+        - ApiKeyAuth: []
+          RoleHeader: []
       responses:
         '202': { description: Accepted }
   /api/notifications:
@@ -18,3 +26,13 @@ paths:
       summary: List notifications
       responses:
         '200': { description: OK }
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+    RoleHeader:
+      type: apiKey
+      in: header
+      name: X-Role

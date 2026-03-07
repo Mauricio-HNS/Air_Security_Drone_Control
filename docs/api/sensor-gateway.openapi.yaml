@@ -1,60 +1,37 @@
 openapi: 3.0.3
 info:
   title: Air Security Drone Control Sensor Gateway API
-  version: 0.1.0
+  version: 0.2.0
 paths:
   /health:
     get:
       summary: Health check
       responses:
-        '200':
-          description: OK
+        '200': { description: OK }
+  /metrics/basic:
+    get:
+      summary: Basic request metrics
+      responses:
+        '200': { description: OK }
   /api/sensors/detections:
     post:
       summary: Ingest detection event
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateDetectionRequest'
+      security:
+        - ApiKeyAuth: []
+          RoleHeader: []
       responses:
-        '201':
-          description: Detection accepted
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/DetectionEvent'
+        '201': { description: Created }
+        '401': { description: Unauthorized }
+        '403': { description: Forbidden }
     get:
       summary: List latest detections
-      parameters:
-        - in: query
-          name: limit
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 1000
       responses:
-        '200':
-          description: Latest detections
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/DetectionEvent'
+        '200': { description: OK }
   /api/sensors/status:
     get:
       summary: List sensor node status
       responses:
-        '200':
-          description: Sensor status list
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/SensorNodeStatus'
+        '200': { description: OK }
   /api/sensors/status/{sensorNodeId}:
     get:
       summary: Get sensor node status by id
@@ -62,61 +39,17 @@ paths:
         - in: path
           name: sensorNodeId
           required: true
-          schema:
-            type: string
+          schema: { type: string }
       responses:
-        '200':
-          description: Sensor node status
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SensorNodeStatus'
-        '404':
-          description: Sensor not found
+        '200': { description: OK }
+        '404': { description: Not found }
 components:
-  schemas:
-    GeoPoint:
-      type: object
-      required: [latitude, longitude]
-      properties:
-        latitude: { type: number, format: double }
-        longitude: { type: number, format: double }
-        altitudeMeters: { type: number, format: double, nullable: true }
-    CreateDetectionRequest:
-      type: object
-      required: [sensorNodeId, sensorType, classification, latitude, longitude, confidence]
-      properties:
-        sensorNodeId: { type: string }
-        sensorType:
-          type: string
-          enum: [Camera, Acoustic, Rf, Radar, ExternalApi, AdsB, AuthorizedTelemetry]
-        classification:
-          type: string
-          enum: [Drone, Bird, Helicopter, RandomNoise, Interference, Unknown]
-        latitude: { type: number, format: double }
-        longitude: { type: number, format: double }
-        altitudeMeters: { type: number, format: double, nullable: true }
-        confidence: { type: number, format: double, minimum: 0, maximum: 1 }
-        headingDegrees: { type: number, format: double, nullable: true }
-        speedMps: { type: number, format: double, nullable: true }
-    DetectionEvent:
-      allOf:
-        - $ref: '#/components/schemas/CreateDetectionRequest'
-        - type: object
-          required: [detectionId, position, timestampUtc]
-          properties:
-            detectionId: { type: string, format: uuid }
-            position: { $ref: '#/components/schemas/GeoPoint' }
-            timestampUtc: { type: string, format: date-time }
-    SensorNodeStatus:
-      type: object
-      properties:
-        sensorNodeId: { type: string }
-        sensorType:
-          type: string
-          enum: [Camera, Acoustic, Rf, Radar, ExternalApi, AdsB, AuthorizedTelemetry]
-        health:
-          type: string
-          enum: [Online, Warning, Offline]
-        lastSeenUtc: { type: string, format: date-time }
-        signalQuality: { type: number, format: double }
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+    RoleHeader:
+      type: apiKey
+      in: header
+      name: X-Role

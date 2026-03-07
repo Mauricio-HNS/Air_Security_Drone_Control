@@ -1,16 +1,24 @@
 openapi: 3.0.3
 info:
   title: Air Security Drone Control Rules Engine API
-  version: 0.1.0
+  version: 0.2.0
 paths:
   /health:
     get:
       summary: Health check
       responses:
         '200': { description: OK }
+  /metrics/basic:
+    get:
+      summary: Basic request metrics
+      responses:
+        '200': { description: OK }
   /api/rules:
     post:
-      summary: Create rule policy
+      summary: Create rule policy (admin)
+      security:
+        - ApiKeyAuth: []
+          RoleHeader: []
       responses:
         '201': { description: Created }
     get:
@@ -19,6 +27,19 @@ paths:
         '200': { description: OK }
   /api/rules/simulate:
     post:
-      summary: Simulate rule decision for a threat context
+      summary: Simulate rule decision
+      security:
+        - ApiKeyAuth: []
+          RoleHeader: []
       responses:
-        '200': { description: Decision output }
+        '200': { description: OK }
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+    RoleHeader:
+      type: apiKey
+      in: header
+      name: X-Role

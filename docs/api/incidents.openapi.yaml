@@ -1,85 +1,53 @@
 openapi: 3.0.3
 info:
   title: Air Security Drone Control Incidents API
-  version: 0.1.0
+  version: 0.2.0
 paths:
   /health:
     get:
       summary: Health check
       responses:
         '200': { description: OK }
+  /metrics/basic:
+    get:
+      summary: Basic request metrics
+      responses:
+        '200': { description: OK }
   /api/incidents/open:
     post:
-      summary: Open an incident case
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [trackId, threatAssessmentId, zone]
-              properties:
-                trackId: { type: string, format: uuid }
-                threatAssessmentId: { type: string, format: uuid }
-                zone: { type: string }
+      summary: Open incident
+      security:
+        - ApiKeyAuth: []
+          RoleHeader: []
       responses:
-        '201':
-          description: Incident opened
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/IncidentCase'
+        '201': { description: Created }
+        '401': { description: Unauthorized }
+        '403': { description: Forbidden }
   /api/incidents/{incidentId}/status:
     patch:
       summary: Update incident status
+      security:
+        - ApiKeyAuth: []
+          RoleHeader: []
       parameters:
         - in: path
           name: incidentId
           required: true
-          schema:
-            type: string
-            format: uuid
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [status]
-              properties:
-                status:
-                  type: string
-                  enum: [Open, UnderInvestigation, Resolved, Dismissed]
+          schema: { type: string, format: uuid }
       responses:
-        '200':
-          description: Incident updated
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/IncidentCase'
+        '200': { description: OK }
   /api/incidents:
     get:
       summary: List incidents
       responses:
-        '200':
-          description: Latest incidents
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/IncidentCase'
+        '200': { description: OK }
 components:
-  schemas:
-    IncidentCase:
-      type: object
-      properties:
-        incidentId: { type: string, format: uuid }
-        trackId: { type: string, format: uuid }
-        threatAssessmentId: { type: string, format: uuid }
-        status:
-          type: string
-          enum: [Open, UnderInvestigation, Resolved, Dismissed]
-        zone: { type: string }
-        createdAtUtc: { type: string, format: date-time }
-        closedAtUtc: { type: string, format: date-time, nullable: true }
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+    RoleHeader:
+      type: apiKey
+      in: header
+      name: X-Role

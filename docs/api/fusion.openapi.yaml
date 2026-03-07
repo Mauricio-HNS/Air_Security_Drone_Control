@@ -1,73 +1,40 @@
 openapi: 3.0.3
 info:
   title: Air Security Drone Control Fusion API
-  version: 0.1.0
+  version: 0.2.0
 paths:
   /health:
     get:
       summary: Health check
       responses:
         '200': { description: OK }
+  /metrics/basic:
+    get:
+      summary: Basic request metrics
+      responses:
+        '200': { description: OK }
   /api/fusion/fuse:
     post:
-      summary: Fuse detection events into a unified track
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [detections]
-              properties:
-                detections:
-                  type: array
-                  minItems: 1
-                  items:
-                    $ref: '#/components/schemas/DetectionEvent'
+      summary: Fuse detection events into a track
+      security:
+        - ApiKeyAuth: []
+          RoleHeader: []
       responses:
-        '200':
-          description: Track created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/FusedTrack'
+        '200': { description: OK }
+        '401': { description: Unauthorized }
+        '403': { description: Forbidden }
   /api/fusion/tracks:
     get:
-      summary: List latest fused tracks
+      summary: List tracks
       responses:
-        '200':
-          description: Latest tracks
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/FusedTrack'
+        '200': { description: OK }
 components:
-  schemas:
-    GeoPoint:
-      type: object
-      properties:
-        latitude: { type: number, format: double }
-        longitude: { type: number, format: double }
-        altitudeMeters: { type: number, format: double, nullable: true }
-    DetectionEvent:
-      type: object
-      properties:
-        detectionId: { type: string, format: uuid }
-        confidence: { type: number, format: double }
-        position: { $ref: '#/components/schemas/GeoPoint' }
-        speedMps: { type: number, format: double, nullable: true }
-        headingDegrees: { type: number, format: double, nullable: true }
-    FusedTrack:
-      type: object
-      properties:
-        trackId: { type: string, format: uuid }
-        detectionIds:
-          type: array
-          items: { type: string, format: uuid }
-        estimatedPosition: { $ref: '#/components/schemas/GeoPoint' }
-        estimatedSpeedMps: { type: number, format: double }
-        estimatedHeadingDegrees: { type: number, format: double }
-        confidence: { type: number, format: double }
-        lastUpdateUtc: { type: string, format: date-time }
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+    RoleHeader:
+      type: apiKey
+      in: header
+      name: X-Role
