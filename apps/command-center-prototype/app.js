@@ -3,9 +3,9 @@ const API_BASE = "http://127.0.0.1:5105";
 const state = {
   liveMode: false,
   tracks: [
-    { id: "T-101", x: 22, y: 48, threat: "MEDIUM", confidence: 0.73, speed: 8.2 },
-    { id: "T-102", x: 52, y: 30, threat: "LOW", confidence: 0.89, speed: 3.4 },
-    { id: "T-103", x: 66, y: 44, threat: "HIGH", confidence: 0.84, speed: 12.7 }
+    { id: "T-101", x: 22, y: 48, threat: "MEDIUM", confidence: 0.73, speed: 8.2, droneType: "Quadcopter" },
+    { id: "T-102", x: 52, y: 30, threat: "LOW", confidence: 0.89, speed: 3.4, droneType: "FixedWing" },
+    { id: "T-103", x: 66, y: 44, threat: "HIGH", confidence: 0.84, speed: 12.7, droneType: "Fpv" }
   ],
   incidents: [
     {
@@ -96,7 +96,7 @@ function renderMap() {
     el.className = `track ${track.threat === "HIGH" || track.threat === "CRITICAL" ? "high" : ""}`;
     el.style.left = `${pos.x}%`;
     el.style.top = `${pos.y}%`;
-    el.title = `${track.id} | ${track.threat} | conf ${Math.round(track.confidence * 100)}%`;
+    el.title = `${track.id} | ${track.threat} | ${track.droneType || "Unknown"} | conf ${Math.round(track.confidence * 100)}%`;
     mapCanvas.appendChild(el);
   });
 
@@ -284,7 +284,8 @@ function simulateEvent() {
     y: Math.random() * 72 + 12,
     threat: Math.random() > 0.65 ? "HIGH" : "MEDIUM",
     confidence: Math.random() * 0.22 + 0.73,
-    speed: Math.random() * 10 + 4
+    speed: Math.random() * 10 + 4,
+    droneType: ["Quadcopter", "Fpv", "FixedWing", "Hexacopter"][Math.floor(Math.random() * 4)]
   };
 
   state.tracks.unshift(newTrack);
@@ -296,7 +297,7 @@ function simulateEvent() {
       zone: "Zona A",
       level: "HIGH",
       createdAt: new Date().toLocaleTimeString("pt-BR"),
-      resumen: `${newTrack.id} detectado con aproximacion critica y ruta convergente.`
+      resumen: `${newTrack.id} (${newTrack.droneType}) detectado con aproximacion critica y ruta convergente.`
     });
     opsStatus.textContent = "ALERTA VERMELHO";
     opsStatus.style.color = "#f05d23";
@@ -338,6 +339,7 @@ async function refreshFromApi() {
     threat: "MEDIUM",
     confidence: t.confidence ?? 0,
     speed: t.estimatedSpeedMps ?? 0,
+    droneType: t.droneType || "Unknown",
     position: t.estimatedPosition
       ? {
           latitude: t.estimatedPosition.latitude,

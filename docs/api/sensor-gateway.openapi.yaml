@@ -19,8 +19,19 @@ paths:
       security:
         - ApiKeyAuth: []
           RoleHeader: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateDetectionRequest'
       responses:
-        '201': { description: Creado }
+        '201':
+          description: Creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DetectionEvent'
         '401': { description: No autorizado }
         '403': { description: Prohibido }
     get:
@@ -44,6 +55,43 @@ paths:
         '200': { description: OK }
         '404': { description: No encontrado }
 components:
+  schemas:
+    DroneType:
+      type: string
+      enum: [Unknown, Quadcopter, Hexacopter, Octocopter, FixedWing, Vtol, Fpv, Nano, HeavyLift]
+    CreateDetectionRequest:
+      type: object
+      required: [sensorNodeId, sensorType, classification, latitude, longitude, confidence]
+      properties:
+        sensorNodeId: { type: string }
+        sensorType: { type: string }
+        classification: { type: string }
+        latitude: { type: number, format: double }
+        longitude: { type: number, format: double }
+        altitudeMeters: { type: number, format: double, nullable: true }
+        confidence: { type: number, format: double }
+        headingDegrees: { type: number, format: double, nullable: true }
+        speedMps: { type: number, format: double, nullable: true }
+        droneType:
+          allOf:
+            - $ref: '#/components/schemas/DroneType'
+          nullable: true
+    DetectionEvent:
+      type: object
+      properties:
+        detectionId: { type: string, format: uuid }
+        sensorNodeId: { type: string }
+        sensorType: { type: string }
+        classification: { type: string }
+        position: { type: object }
+        timestampUtc: { type: string, format: date-time }
+        confidence: { type: number, format: double }
+        headingDegrees: { type: number, format: double, nullable: true }
+        speedMps: { type: number, format: double, nullable: true }
+        droneType:
+          allOf:
+            - $ref: '#/components/schemas/DroneType'
+          nullable: true
   securitySchemes:
     ApiKeyAuth:
       type: apiKey

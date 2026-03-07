@@ -48,7 +48,7 @@ app.MapPost("/api/fusion/fuse", async (
 {
     if (request.Detections.Count == 0)
     {
-        return Results.BadRequest("At least one detection is required.");
+        return Results.BadRequest("Se requiere al menos una deteccion.");
     }
 
     var avgLat = request.Detections.Average(x => x.Position.Latitude);
@@ -72,6 +72,15 @@ app.MapPost("/api/fusion/fuse", async (
         .Average();
 
     var confidence = request.Detections.Average(x => x.Confidence);
+    var detectedDroneType = request.Detections
+        .Where(x => x.Classification == ClassificationType.Drone)
+        .Select(x => x.DroneType ?? DroneType.Unknown)
+        .Where(x => x != DroneType.Unknown)
+        .GroupBy(x => x)
+        .OrderByDescending(x => x.Count())
+        .ThenBy(x => x.Key)
+        .Select(x => (DroneType?)x.Key)
+        .FirstOrDefault();
 
     var track = new FusedTrack(
         TrackId: Guid.NewGuid(),
@@ -80,7 +89,8 @@ app.MapPost("/api/fusion/fuse", async (
         EstimatedSpeedMps: avgSpeed,
         EstimatedHeadingDegrees: avgHeading,
         Confidence: confidence,
-        LastUpdateUtc: DateTimeOffset.UtcNow);
+        LastUpdateUtc: DateTimeOffset.UtcNow,
+        DroneType: detectedDroneType);
 
     tracks[track.TrackId] = track;
     await trackStore.WriteAllAsync(tracks.Values.OrderByDescending(x => x.LastUpdateUtc), ct);

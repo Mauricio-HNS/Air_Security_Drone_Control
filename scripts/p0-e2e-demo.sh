@@ -34,13 +34,13 @@ d1=$(curl -fsS -X POST "$base_sensor/api/sensors/detections" \
   -H "X-API-Key: $api_key" \
   -H "X-Role: $role_operator" \
   -H "Content-Type: application/json" \
-  -d '{"sensorNodeId":"CAM-01","sensorType":"Camera","classification":"Drone","latitude":-23.55052,"longitude":-46.633308,"altitudeMeters":120,"confidence":0.86,"headingDegrees":45,"speedMps":12.5}')
+  -d '{"sensorNodeId":"CAM-01","sensorType":"Camera","classification":"Drone","latitude":-23.55052,"longitude":-46.633308,"altitudeMeters":120,"confidence":0.86,"headingDegrees":45,"speedMps":12.5,"droneType":"Quadcopter"}')
 
 d2=$(curl -fsS -X POST "$base_sensor/api/sensors/detections" \
   -H "X-API-Key: $api_key" \
   -H "X-Role: $role_operator" \
   -H "Content-Type: application/json" \
-  -d '{"sensorNodeId":"RF-02","sensorType":"Rf","classification":"Drone","latitude":-23.55074,"longitude":-46.632901,"altitudeMeters":118,"confidence":0.81,"headingDegrees":47,"speedMps":13.1}')
+  -d '{"sensorNodeId":"RF-02","sensorType":"Rf","classification":"Drone","latitude":-23.55074,"longitude":-46.632901,"altitudeMeters":118,"confidence":0.81,"headingDegrees":47,"speedMps":13.1,"droneType":"Quadcopter"}')
 
 echo "[2/8] Fuse detections into track"
 fuse_payload=$(python3 - "$d1" "$d2" <<'PY'

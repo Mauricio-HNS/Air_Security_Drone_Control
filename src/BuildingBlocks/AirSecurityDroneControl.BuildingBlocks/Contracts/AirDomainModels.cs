@@ -28,6 +28,19 @@ public enum ClassificationType
     Unknown
 }
 
+public enum DroneType
+{
+    Unknown,
+    Quadcopter,
+    Hexacopter,
+    Octocopter,
+    FixedWing,
+    Vtol,
+    Fpv,
+    Nano,
+    HeavyLift
+}
+
 public enum ThreatLevel
 {
     Low,
@@ -55,7 +68,8 @@ public record DetectionEvent(
     DateTimeOffset TimestampUtc,
     double Confidence,
     double? HeadingDegrees = null,
-    double? SpeedMps = null);
+    double? SpeedMps = null,
+    DroneType? DroneType = null);
 
 public record FusedTrack(
     Guid TrackId,
@@ -64,7 +78,8 @@ public record FusedTrack(
     double EstimatedSpeedMps,
     double EstimatedHeadingDegrees,
     double Confidence,
-    DateTimeOffset LastUpdateUtc);
+    DateTimeOffset LastUpdateUtc,
+    DroneType? DroneType = null);
 
 public record ProtectedZone(
     Guid ZoneId,

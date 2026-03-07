@@ -61,7 +61,8 @@ app.MapPost("/api/sensors/detections", async (
         TimestampUtc: DateTimeOffset.UtcNow,
         Confidence: Math.Clamp(request.Confidence, 0, 1),
         HeadingDegrees: request.HeadingDegrees,
-        SpeedMps: request.SpeedMps);
+        SpeedMps: request.SpeedMps,
+        DroneType: request.DroneType);
 
     store[detection.DetectionId] = detection;
     sensorStatus[detection.SensorNodeId] = new SensorNodeStatus(
@@ -165,4 +166,5 @@ public record CreateDetectionRequest(
     double? AltitudeMeters,
     double Confidence,
     double? HeadingDegrees,
-    double? SpeedMps);
+    double? SpeedMps,
+    DroneType? DroneType);

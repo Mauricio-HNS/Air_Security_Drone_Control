@@ -206,6 +206,20 @@ Este repositorio contiene el bootstrap de arquitectura y endpoints de dominio pa
 Persistencia durable local (JSON) y event log local estan activos en `.runtime/data/<service>`.
 Mensajeria distribuida y autenticacion enterprise quedan para las proximas iteraciones.
 
+## Tipos de dron soportados (MVP)
+
+El contrato de deteccion y fusion incluye `droneType` para trazabilidad operacional:
+
+- `Unknown`
+- `Quadcopter`
+- `Hexacopter`
+- `Octocopter`
+- `FixedWing`
+- `Vtol`
+- `Fpv`
+- `Nano`
+- `HeavyLift`
+
 ## Evolucion continua (compromiso)
 
 Cada nueva iteracion debe:
