@@ -1,53 +1,53 @@
 # P0 Execution Backlog
 
-Backlog tecnico para concluir o MVP operacional do Air Security Drone Control.
+Backlog tecnico para completar el MVP operativo de Air Security Drone Control.
 
 ## Objetivo P0
 
-Entregar fluxo completo:
-`deteccao -> fusao -> threat -> incidente -> command center`
-com 2 tipos de sensor e visualizacao em tempo real.
+Entregar flujo completo:
+`deteccion -> fusion -> threat -> incidente -> command center`
+com 2 tipos de sensor y visualizacion en tiempo real.
 
 ## Workstreams
 
 ### 1. SensorGateway.Api
-- [ ] Endpoint de status de sensores
-- [ ] Atualizacao de status por ultima deteccao
+- [ ] Endpoint de estado de sensores
+- [ ] Atualizacao de status por ultima deteccion
 - [ ] Mapeamento basico de tipo de sensor por node
 - [ ] Contrato para envio de status ao Command Center
 
-Criterio de aceite:
+Criterio de aceptacion:
 - [ ] `GET /api/sensors/status` retorna estado consistente
-- [ ] Sensor muda para online apos ingestao de deteccao
+- [ ] Sensor muda para online apos ingesta de deteccion
 
 ### 2. Fusion.Api
-- [ ] Correlacao por lote com validacao minima
-- [ ] Persistencia em memoria de tracks ativos
-- [ ] Endpoint de listagem para consumo operacional
+- [ ] Correlacion por lote con validacion minima
+- [ ] Persistencia en memoria de tracks ativos
+- [ ] Endpoint de listagem para consumo operativo
 
-Criterio de aceite:
+Criterio de aceptacion:
 - [ ] `POST /api/fusion/fuse` retorna track valido
 - [ ] `GET /api/fusion/tracks` retorna tracks recentes
 
 ### 3. ThreatScoring.Api
-- [ ] Score dinamico com fatores explicitos
+- [ ] Score dinamico con fatores explicitos
 - [ ] Nivel de ameaca padronizado
 - [ ] Endpoint historico de assessments
 
-Criterio de aceite:
+Criterio de aceptacion:
 - [ ] `POST /api/threat/assess` classifica risco corretamente
 
 ### 4. Incidents.Api
-- [ ] Abertura de incidente por assessment
+- [ ] Apertura de incidente por assessment
 - [ ] Atualizacao de status de incidente
-- [ ] Listagem para visao operacional
+- [ ] Listagem para vision operativo
 
-Criterio de aceite:
-- [ ] Incidente abre com dados de track e zona
+Criterio de aceptacion:
+- [ ] Incidente abre con datos de track y zona
 - [ ] Workflow de status funciona sem erro
 
 ### 5. CommandCenter.Api
-- [ ] Projection de tracks, threats e incidents
+- [ ] Projection de tracks, threats y incidents
 - [ ] Projection de status de sensores
 - [ ] Endpoints diretos para frontend:
   - [ ] `GET /api/overview`
@@ -56,29 +56,29 @@ Criterio de aceite:
   - [ ] `GET /api/sensors/status`
   - [ ] `GET /api/replay/{incidentId}`
 
-Criterio de aceite:
-- [ ] Frontend pode consumir dados sem mock local
+Criterio de aceptacion:
+- [ ] Frontend pode consumir datos sem mock local
 
-### 6. Operacao Local
-- [ ] Script de start da stack P0
-- [ ] Script de stop da stack P0
-- [ ] Script de demo fim a fim com cURL
+### 6. Operacion Local
+- [ ] Script de inicio de la stack P0
+- [ ] Script de parada de la stack P0
+- [ ] Script de demo end-to-end con cURL
 
-Criterio de aceite:
-- [ ] Operador sobe stack com 1 comando
-- [ ] Demo gera incidente e overview automaticamente
+Criterio de aceptacion:
+- [ ] Operador levanta la stack con 1 comando
+- [ ] Demo genera incidente y overview automaticamente
 
 ### 7. Documentacao
-- [ ] README com comandos oficiais
-- [ ] Contratos OpenAPI sincronizados com endpoints reais
+- [ ] README con comandos oficiales
+- [ ] Contratos OpenAPI sincronizados con endpoints reales
 - [ ] Runbook rapido de troubleshoot
 
-Criterio de aceite:
-- [ ] Qualquer dev consegue reproduzir o fluxo em maquina limpa
+Criterio de aceptacion:
+- [ ] Qualquer dev consegue reproduzir o flujo en maquina limpa
 
 ## Definition of Done P0
 
-- [ ] Build da solucao verde (`dotnet build AirSecurityDroneControl.sln`)
-- [ ] Demo fim a fim concluida com incidente aberto e projetado
-- [ ] Command Center recebendo dados reais via API
-- [ ] Documentacao atualizada e versionada
+- [ ] Build de la solucion en verde (`dotnet build AirSecurityDroneControl.sln`)
+- [ ] Demo end-to-end completada con incidente abierto y proyectado
+- [ ] Command Center recebendo datos reales via API
+- [ ] Documentacao atualizada y versionada

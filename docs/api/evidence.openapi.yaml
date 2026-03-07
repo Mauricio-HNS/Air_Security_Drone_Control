@@ -5,24 +5,24 @@ info:
 paths:
   /health:
     get:
-      summary: Health check
+      summary: Chequeo de salud
       responses:
         '200': { description: OK }
   /metrics/basic:
     get:
-      summary: Basic request metrics
+      summary: Metricas basicas de solicitudes
       responses:
         '200': { description: OK }
   /api/evidence:
     post:
-      summary: Store evidence with integrity hash
+      summary: Guardar evidencia con hash de integridad
       security:
         - ApiKeyAuth: []
           RoleHeader: []
       responses:
-        '201': { description: Created }
+        '201': { description: Creado }
     get:
-      summary: List evidence
+      summary: Listar evidencias
       responses:
         '200': { description: OK }
 components:

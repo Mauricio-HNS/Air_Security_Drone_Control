@@ -2,9 +2,9 @@
 
 Next-Generation Counter-UAS & Airspace Security Platform.
 
-Plataforma avancada para deteccao, classificacao, rastreamento e resposta a ameacas aereas de baixo alcance, projetada para proteger aeroportos, bases militares, infraestrutura critica e grandes eventos.
+Plataforma avanzada para deteccion, clasificacion, seguimiento y respuesta a amenazas aereas de bajo alcance, disenada para proteger aeropuertos, bases militares, infraestructura critica y grandes eventos.
 
-Arquitetura edge + cloud, processamento multimodal de sensores e inteligencia baseada em IA para analise de ameacas em tempo real.
+Arquitectura edge + cloud, processamento multimodal de sensores y inteligencia baseada en IA para analisis de amenazas en tiempo real.
 
 ## 1. Sensor Integration Layer
 
@@ -20,14 +20,14 @@ Arquitetura edge + cloud, processamento multimodal de sensores e inteligencia ba
 ### Capacidades
 - Gestao centralizada de sensores
 - Conectores RTSP / ONVIF / MQTT / TCP / UDP / HTTP / gRPC
-- Sincronizacao temporal multi-fonte
+- Sincronizacao tiemporal multi-fonte
 - Buffering resiliente
 - Health monitoring
 - Versionamento de firmware
 - Auto-discovery de sensores
 - Provisionamento remoto
 
-Todos os dados sao normalizados em `DetectionEvent`.
+Todos os datos sao normalizados en `DetectionEvent`.
 
 ## 2. AI Detection & Classification Engine
 
@@ -47,7 +47,7 @@ Todos os dados sao normalizados em `DetectionEvent`.
 - Reconhecimento de comportamento anomalo
 - Deteccao de swarm
 
-Cada deteccao gera:
+Cada deteccion gera:
 - Confidence score
 - Sensor attribution
 - Classification probability
@@ -55,11 +55,11 @@ Cada deteccao gera:
 ## 3. Multi-Sensor Fusion Engine
 
 ### Capacidades
-- Correlacao espacial e temporal
+- Correlacion espacial y tiemporal
 - Deduplicacao de eventos
 - Consenso entre sensores
-- Resolucao de conflito
-- Calculo de confianca consolidada
+- Resolucion de conflito
+- Calculo de confianza consolidada
 
 Resultado:
 - `FusedTrack`
@@ -68,12 +68,12 @@ Resultado:
 ## 4. Real-Time Tracking & Prediction
 
 ### Recursos
-- Trilha em tempo real
-- Velocidade e direcao estimadas
+- Trilha en tiempo real
+- Velocidade y direcao estimadas
 - Altitude aproximada
-- Previsao de trajetoria
+- Prevision de trajetoria
 - ETA para zona protegida
-- Recuperacao de trilha perdida
+- Recuperacao de trayectoria perdida
 - Historico de movimentacao
 
 ### Algoritmos utilizados
@@ -83,7 +83,7 @@ Resultado:
 
 ## 5. Threat Intelligence Engine
 
-Cada alvo recebe um Threat Score dinamico baseado em:
+Cada objetivo recebe um Threat Score dinamico baseado em:
 - Proximidade de zonas sensiveis
 - Persistencia de voo
 - Comportamento irregular
@@ -97,8 +97,8 @@ Niveis de ameaca:
 - HIGH
 - CRITICAL
 
-Sistema tambem gera:
-- Explicacao do score
+Sistema tambien gera:
+- Explicacion del score
 - Reavaliacao continua
 
 ## 6. Operational Rules Engine
@@ -115,11 +115,11 @@ Sistema tambem gera:
 
 ## 7. Incident Management System
 
-Cada incidente contem:
+Cada incidente contiene:
 - ID unico
 - Timestamp
 - Zona afetada
-- Trilha do alvo
+- Trayectoria del objetivo
 - Sensores envolvidos
 - Threat score
 
@@ -133,7 +133,7 @@ Workflow:
 Inclui:
 - Atribuicao de operador
 - Comentarios colaborativos
-- SLA de resposta
+- SLA de respuesta
 - Analise de causa raiz
 
 ## 8. Evidence & Forensic Chain
@@ -142,7 +142,7 @@ Inclui:
 - Frames de video
 - Espectro RF
 - Trilhas de voo
-- Logs operacionais
+- Logs operativos
 - Audio
 
 ### Recursos
@@ -156,18 +156,18 @@ Inclui:
 
 ### Recursos
 - Mapa tatico ao vivo
-- Visualizacao de trilhas
+- Visualizacao de trayectorias
 - Zonas protegidas
-- Alertas em tempo real
+- Alertas en tiempo real
 - Lista de incidentes
 - Painel de sensores
-- Replay temporal
+- Replay tiemporal
 - Dashboards executivos
 
 ## 10. Alerting & Notification System
 
 Suporte para:
-- Alertas em tempo real
+- Alertas en tiempo real
 - Webhooks
 - E-mail
 - SMS
@@ -185,7 +185,7 @@ Recursos adicionais:
 - Heatmap de risco
 - Rotas recorrentes
 - Analise de falso positivo
-- Eficiencia operacional
+- Eficiencia operativo
 
 ### Metricas chave
 - MTTD
@@ -193,7 +193,7 @@ Recursos adicionais:
 - Incident rate
 - Sensor accuracy
 
-O sistema tambem gera recomendacoes automaticas para ajuste de sensores e regras.
+O sistema tambien gera recomendaciones automaticas para ajuste de sensores y reglas.
 
 ## 12. Platform Administration
 
@@ -231,10 +231,10 @@ O sistema tambem gera recomendacoes automaticas para ajuste de sensores e regras
 - MFA
 - Criptografia end-to-end
 - Gestao de segredos
-- Auditoria imutavel
+- Auditoria inmutable
 - Protecao de edge nodes
 
-Compliance alinhado com:
+Compliance alineado com:
 - GDPR
 - ISO 27001
 - Padroes aeroespaciais emergentes
@@ -245,7 +245,7 @@ Inclui:
 - Logs estruturados
 - Metricas de sistema
 - Tracing distribuido
-- Dashboards operacionais
+- Dashboards operativos
 - Alertas de saude
 
 Definicao de:
@@ -257,7 +257,7 @@ Definicao de:
 
 ### Edge
 - Processamento local
-- Operacao offline
+- Operacion offline
 - Fusao inicial de sensores
 
 ### Cloud
@@ -273,11 +273,11 @@ Definicao de:
 ## 17. Simulation & Testing Environment
 
 ### Recursos
-- Simulacao de ataque com drones
+- Simulacao de ataque con drones
 - Simulacao de swarm
 - Replay historico
 - Treinamento de operadores
-- Testes de falha de sensores
+- Pruebas de fallo de sensores
 - Cenarios de caos
 
 ## Posicionamento de Mercado
@@ -289,6 +289,6 @@ A plataforma se posiciona no mercado Counter-UAS / Airspace Security, atualmente
 
 ## Visao
 
-Criar uma infraestrutura capaz de proteger espacos aereos criticos em tempo real, combinando sensores, inteligencia artificial e automacao operacional.
+Criar uma infraestructura capaz de proteger espacios aereos criticos en tiempo real, combinando sensores, inteligencia artificial y automatizacion operativo.
 
-Objetivo final: evoluir para uma rede global de defesa de baixa altitude, capaz de detectar, prever e neutralizar ameacas aereas autonomas.
+Objetivo final: evolucionar para uma rede global de defesa de baixa altitude, capaz de detectar, prever y neutralizar amenazas aereas autonomas.

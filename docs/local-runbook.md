@@ -1,16 +1,16 @@
 # Local Runbook (P0)
 
-## Fluxo rapido
+## Flujo rapido
 
 1. `dotnet build AirSecurityDroneControl.sln`
 2. `./scripts/run-p0-stack.sh`
 3. `./scripts/p0-e2e-demo.sh`
 4. `./scripts/stop-p0-stack.sh`
 
-## Headers para endpoints mutaveis
+## Headers para endpoints mutables
 
 - `X-API-Key: dev-local-key`
-- `X-Role: operator` (ou `admin` para rotas administrativas)
+- `X-Role: operator` (o `admin` para rutas administrativas)
 
 ## Endpoints locais
 
@@ -23,27 +23,27 @@
 - Notifications: `http://127.0.0.1:5107`
 - Evidence: `http://127.0.0.1:5108`
 
-## Logs e processos
+## Logs y processos
 
 - Logs: `.runtime/logs/`
 - PIDs: `.runtime/pids.txt`
 
 ## Troubleshooting
 
-### Servico nao sobe
+### Servico no sube
 
-- Verifique log do servico em `.runtime/logs/<service>.log`
-- Rode build novamente:
+- Verifica el log del servicio en `.runtime/logs/<service>.log`
+- Ejecuta build nuevamente:
   - `dotnet build AirSecurityDroneControl.sln`
 
-### Porta ocupada
+### Puerto ocupado
 
-- Mate o processo que ocupa a porta e rode de novo
+- Mata el proceso que ocupa el puerto y ejecuta de nuevo
 - Ou altere a porta no script `scripts/run-p0-stack.sh`
 
-### Demo falha em algum passo
+### La demo falla en algun paso
 
-- Rode health checks manuais:
+- Ejecuta health checks manuales:
   - `curl -s http://127.0.0.1:5101/health`
   - `curl -s http://127.0.0.1:5102/health`
   - `curl -s http://127.0.0.1:5103/health`

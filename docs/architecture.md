@@ -1,36 +1,36 @@
-# Arquitetura - Air Security Drone Control
+# Arquitectura - Air Security Drone Control
 
 ## Servicos MVP
 
-- `SensorGateway.Api`: ingestao de deteccoes de camera, RF, audio e radar.
-- `Fusion.Api`: fusao de multiplas deteccoes em um track unificado.
-- `ThreatScoring.Api`: pontuacao de risco dinamica por track e zona.
-- `Incidents.Api`: abertura e ciclo de vida de incidentes.
-- `CommandCenter.Api`: visao consolidada para painel operacional.
+- `SensorGateway.Api`: ingesta de detecciones de camara, RF, audio y radar.
+- `Fusion.Api`: fusion de multiplas detecciones en um track unificado.
+- `ThreatScoring.Api`: pontuacao de risco dinamica por track y zona.
+- `Incidents.Api`: apertura y ciclo de vida de incidentes.
+- `CommandCenter.Api`: vision consolidada para painel operativo.
 
 ## Building Blocks
 
-Contratos compartilhados em `AirSecurityDroneControl.BuildingBlocks`:
+Contratos compartilhados en `AirSecurityDroneControl.BuildingBlocks`:
 
 - `DetectionEvent`
 - `FusedTrack`
 - `ThreatAssessment`
 - `IncidentCase`
 - `ProtectedZone`
-- enums de classificacao, nivel de ameaca e status.
+- enums de clasificacion, nivel de ameaca y status.
 
 ## Principios de projeto
 
 - Design orientado a eventos.
 - Servicos stateless sempre que possivel.
-- Estado operacional curto em cache distribuido.
-- Persistencia geoespacial para trilhas e zonas protegidas.
-- Observabilidade como requisito de primeira classe.
+- Estado operativo curto en cache distribuido.
+- Persistencia geoespacial para trayectorias y zonas protegidas.
+- Observabilidad como requisito de primera clase.
 
-## Evolucao recomendada (producao)
+## Evolucao recomendada (produccion)
 
 1. Substituir chamadas diretas por Kafka (topicos por bounded context).
-2. Introduzir Postgres + PostGIS em servicos de tracking/incidentes.
-3. Adicionar autenticacao (OIDC/JWT) e RBAC.
-4. Incluir trilha de auditoria imutavel para evidencias.
-5. Expor telemetria com OpenTelemetry + Prometheus.
+2. Introducir Postgres + PostGIS en servicios de tracking/incidentes.
+3. Adicionar autenticacion (OIDC/JWT) y RBAC.
+4. Incluir trazabilidad de auditoria inmutable para evidencias.
+5. Expor telemetria con OpenTelemetry + Prometheus.

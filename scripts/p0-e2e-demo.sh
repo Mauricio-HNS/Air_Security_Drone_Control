@@ -66,7 +66,7 @@ PY
 )
 threat=$(curl -fsS -X POST "$base_threat/api/threat/assess" -H "X-API-Key: $api_key" -H "X-Role: $role_operator" -H "Content-Type: application/json" -d "$assess_payload")
 
-echo "[4/8] Open incident"
+echo "[4/8] Abrir incidente"
 incident_payload=$(python3 - "$track" "$threat" <<'PY'
 import json,sys
 track=json.loads(sys.argv[1])
@@ -92,7 +92,7 @@ curl -fsS -X POST "$base_command/api/projections/tracks" -H "X-API-Key: $api_key
 curl -fsS -X POST "$base_command/api/projections/threats" -H "X-API-Key: $api_key" -H "X-Role: $role_operator" -H "Content-Type: application/json" -d "$threat" >/dev/null
 curl -fsS -X POST "$base_command/api/projections/incidents" -H "X-API-Key: $api_key" -H "X-Role: $role_operator" -H "Content-Type: application/json" -d "$incident" >/dev/null
 
-echo "[6/10] Project sensor status"
+echo "[6/10] Proyectar estado del sensor"
 sensor_status=$(curl -fsS "$base_sensor/api/sensors/status")
 python3 - "$sensor_status" "$base_command" <<'PY'
 import json,sys,urllib.request
@@ -110,19 +110,19 @@ for sensor in sensors:
 print("projected", len(sensors), "sensor status entries")
 PY
 
-echo "[7/10] Store evidence"
+echo "[7/10] Guardar evidencia"
 evidence=$(curl -fsS -X POST "$base_evidence/api/evidence" -H "X-API-Key: $api_key" -H "X-Role: $role_operator" -H "Content-Type: application/json" -d "$(python3 - "$incident" "$threat" <<'PY'
 import json,sys
 inc=json.loads(sys.argv[1]); thr=json.loads(sys.argv[2])
 print(json.dumps({
   "incidentId": inc["incidentId"],
   "evidenceType": "telemetry",
-  "content": f"Threat score={thr['score']} summary={thr['summary']}"
+  "content": f"Threat score={thr['score']} resumen={thr['summary']}"
 }))
 PY
 )")
 
-echo "[8/10] Send notification"
+echo "[8/10] Enviar notificacion"
 notification=$(curl -fsS -X POST "$base_notifications/api/notifications/send" -H "X-API-Key: $api_key" -H "X-Role: $role_operator" -H "Content-Type: application/json" -d "$(python3 - "$incident" "$rule" <<'PY'
 import json,sys
 inc=json.loads(sys.argv[1]); rule=json.loads(sys.argv[2])
@@ -145,7 +145,7 @@ print(json.loads(sys.argv[1])["incidentId"])
 PY
 )
 
-echo "[10/10] Fetch replay"
+echo "[10/10] Obtener replay"
 replay=$(curl -fsS "$base_command/api/replay/${incident_id}")
 
 echo ""

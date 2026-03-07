@@ -1,49 +1,49 @@
 # Command Center Prototype (Visual)
 
-Protótipo visual para validar produto, operação e fluxo de decisão antes da implementação completa de backend.
+Prototipo visual para validar producto, operacion y flujo de decision antes de la implementacion completa del backend.
 
-## Como executar
+## Como ejecutar
 
-Basta abrir o arquivo:
+Abre el archivo:
 
 - `apps/command-center-prototype/index.html`
 
-Ou servir localmente:
+O servirlo localmente:
 
 ```bash
 cd apps/command-center-prototype
 python3 -m http.server 4173
 ```
 
-Acesse:
+Accede:
 
 - `http://127.0.0.1:4173`
 
-## O que já valida
+## Lo que ya valida
 
-- Mapa tático com zonas e trilhas simuladas.
-- Painel de incidentes com severidade.
-- Estado dos sensores e qualidade de sinal.
-- Replay de evolução do incidente.
-- Pipeline modular fim a fim (Gateway -> Fusion -> Threat -> Rules -> Incident -> Command Center).
-- Modo Live opcional consumindo APIs reais do backend local.
+- Mapa tactico con zonas y trayectorias simuladas.
+- Panel de incidentes con severidad.
+- Estado de sensores y calidad de señal.
+- Replay de evolucion del incidente.
+- Pipeline modular end-to-end (Gateway -> Fusion -> Threat -> Rules -> Incident -> Command Center).
+- Modo Live opcional consumiendo APIs reales del backend local.
 
-## Decisão para backend (derivada da UI)
+## Decision para backend (derivada de la UI)
 
-Este protótipo fixa os contratos mínimos que o backend precisa fornecer:
+Este prototipo define los contratos minimos que el backend debe proveer:
 
 1. `GET /api/overview`
 2. `GET /api/incidents`
 3. `GET /api/tracks`
 4. `GET /api/sensors/status`
 5. `GET /api/replay/{incidentId}`
-6. `POST /api/rules/simulate` (para testes operacionais)
+6. `POST /api/rules/simulate` (para pruebas operativas)
 
 ## Modo Live
 
-Com o backend local rodando na porta `5105`, clique em `Modo Live: OFF` para alternar para `Modo Live: ON`.
+Con el backend local ejecutandose en el puerto `5105`, haz clic en `Modo Live: OFF` para cambiar a `Modo Live: ON`.
 
-O prototipo passa a consultar:
+El prototipo consulta:
 
 - `GET /api/tracks`
 - `GET /api/incidents`

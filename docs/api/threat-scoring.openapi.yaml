@@ -5,27 +5,27 @@ info:
 paths:
   /health:
     get:
-      summary: Health check
+      summary: Chequeo de salud
       responses:
         '200': { description: OK }
   /metrics/basic:
     get:
-      summary: Basic request metrics
+      summary: Metricas basicas de solicitudes
       responses:
         '200': { description: OK }
   /api/threat/assess:
     post:
-      summary: Compute threat assessment
+      summary: Calcular evaluacion de amenaza
       security:
         - ApiKeyAuth: []
           RoleHeader: []
       responses:
         '200': { description: OK }
-        '401': { description: Unauthorized }
-        '403': { description: Forbidden }
+        '401': { description: No autorizado }
+        '403': { description: Prohibido }
   /api/threat/assessments:
     get:
-      summary: List assessments
+      summary: Listar evaluaciones
       responses:
         '200': { description: OK }
 components:

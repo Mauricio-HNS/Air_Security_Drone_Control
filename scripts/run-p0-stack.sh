@@ -53,6 +53,6 @@ start_service "notifications" "src/Services/Notifications.Api/bin/Debug/net9.0/N
 start_service "evidence" "src/Services/Evidence.Api/bin/Debug/net9.0/Evidence.Api.dll" 5108
 
 echo ""
-echo "P0 stack is running."
+echo "La pila P0 esta en ejecucion."
 echo "PID file: $PID_FILE"
 echo "Logs: $LOG_DIR"

@@ -13,7 +13,7 @@ const state = {
       zone: "Zona A",
       level: "HIGH",
       createdAt: "04:02:12",
-      summary: "Track T-103 com aproximação persistente e confirmação multisensor."
+      resumen: "Track T-103 con aproximacion persistente y confirmacion multisensor."
     }
   ],
   sensors: [
@@ -25,11 +25,11 @@ const state = {
     { id: "CAM-SP-05", type: "Camera", status: "offline", quality: 0 }
   ],
   replay: [
-    "T+00s: RF sensor detecta assinatura na borda da Zona A.",
-    "T+08s: Camera confirma objeto pequeno em movimento constante.",
-    "T+14s: Fusion agrupa deteccoes em T-103 (confiança 0.81).",
-    "T+20s: Threat scoring sobe para HIGH por proximidade e persistencia.",
-    "T+27s: Incident service abre INC-00045 e notifica operador."
+    "T+00s: RF sensor detecta firma en el borde de la Zona A.",
+    "T+08s: Camara confirma objeto pequeno en movimiento constante.",
+    "T+14s: Fusion agrupa detecciones en T-103 (confianza 0.81).",
+    "T+20s: Threat scoring sube a HIGH por proximidad y persistencia.",
+    "T+27s: Incident service abre INC-00045 y notifica al operador."
   ]
 };
 
@@ -49,11 +49,11 @@ const opsStatus = document.getElementById("ops-status");
 const opsTime = document.getElementById("ops-time");
 
 const titles = {
-  overview: ["Mapa Tático", "Visão em tempo real de tracks, zonas e ameaça"],
-  incidents: ["Gestão de Incidentes", "Casos ativos, evidências e status operacional"],
-  sensors: ["Painel de Sensores", "Saúde e qualidade da rede de detecção"],
-  replay: ["Replay Tático", "Análise temporal para pós-incidente e auditoria"],
-  architecture: ["Arquitetura Modular", "Pipeline de decisão operacional em camadas"]
+  overview: ["Mapa Tactico", "Vista en tiempo real de tracks, zonas y amenaza"],
+  incidents: ["Gestion de Incidentes", "Casos activos, evidencias y estado operativo"],
+  sensors: ["Panel de Sensores", "Salud y calidad de la red de deteccion"],
+  replay: ["Replay Tactico", "Analisis temporal para post-incidente y auditoria"],
+  architecture: ["Arquitectura Modular", "Pipeline de decision operativa por capas"]
 };
 
 function setClock() {
@@ -125,7 +125,7 @@ function renderIncidents() {
     el.className = `incident ${item.level === "HIGH" || item.level === "CRITICAL" ? "high" : ""}`;
     el.innerHTML = `
       <strong>${item.id} • ${item.level}</strong>
-      <p>${item.summary}</p>
+      <p>${item.resumen}</p>
       <small>Zona: ${item.zone} • Hora: ${item.createdAt}</small>
     `;
     incidentList.appendChild(el);
@@ -141,7 +141,7 @@ function renderSensors() {
     el.innerHTML = `
       <strong><span class="dot ${sensor.status}"></span>${sensor.id}</strong>
       <p>${sensor.type}</p>
-      <small>Qualidade de sinal: ${sensor.quality}%</small>
+      <small>Calidad de sinal: ${sensor.quality}%</small>
     `;
     sensorGrid.appendChild(el);
   });
@@ -158,14 +158,14 @@ function renderReplay() {
 function renderPipeline() {
   const pipeline = document.getElementById("pipeline");
   const steps = [
-    ["Sensor Gateway", "Recebe câmera, RF, acústico, radar e API externa."],
-    ["Detection + Classification", "Classifica drone, pássaro, helicóptero, ruído ou desconhecido."],
-    ["Fusion Engine", "Correlaciona sinais para confirmar alvo e reduzir falso positivo."],
-    ["Tracking", "Mantém trilha com posição, velocidade e rota provável."],
-    ["Threat Scoring", "Calcula score dinâmico por proximidade, persistência e zona sensível."],
-    ["Rules Engine", "Define alerta amarelo/vermelho e gatilho de incidente."],
-    ["Incident Management", "Abre, atualiza e fecha casos com evidências e auditoria."],
-    ["Command Center", "Apresenta mapa, timeline, incidentes e replay para operação."]
+    ["Sensor Gateway", "Recibe camara, RF, acustico, radar y API externa."],
+    ["Detection + Classification", "Clasifica dron, pajaro, helicoptero, ruido o desconocido."],
+    ["Fusion Engine", "Correlaciona señales para confirmar objetivo y reducir falsos positivos."],
+    ["Tracking", "Mantiene trayectoria con posicion, velocidad y ruta probable."],
+    ["Threat Scoring", "Calcula score dinamico por proximidad, persistencia y zona sensible."],
+    ["Rules Engine", "Define alerta amarilla/roja y disparador de incidente."],
+    ["Gestion de Incidentes", "Abre, actualiza y cierra casos con evidencias y auditoria."],
+    ["Command Center", "Presenta mapa, timeline, incidentes y replay para operacion."]
   ];
 
   pipeline.innerHTML = steps
@@ -203,12 +203,12 @@ function simulateEvent() {
       zone: "Zona A",
       level: "HIGH",
       createdAt: new Date().toLocaleTimeString("pt-BR"),
-      summary: `${newTrack.id} detectado com aproximação crítica e rota convergente.`
+      resumen: `${newTrack.id} detectado con aproximacion critica y ruta convergente.`
     });
     opsStatus.textContent = "ALERTA VERMELHO";
     opsStatus.style.color = "#f05d23";
   } else {
-    opsStatus.textContent = "ALERTA AMARELO";
+    opsStatus.textContent = "ALERTA AMARILLA";
     opsStatus.style.color = "#f2b134";
   }
 
@@ -258,7 +258,7 @@ async function refreshFromApi() {
     zone: i.zone || "Unknown",
     level: i.status === "Open" ? "HIGH" : "MEDIUM",
     createdAt: new Date(i.createdAtUtc).toLocaleTimeString("pt-BR"),
-    summary: `Track ${String(i.trackId || "").slice(0, 8)} em ${i.zone || "zona"} (${i.status}).`
+    resumen: `Track ${String(i.trackId || "").slice(0, 8)} en ${i.zone || "zona"} (${i.status}).`
   }));
 
   state.sensors = sensorsData.map((s) => ({

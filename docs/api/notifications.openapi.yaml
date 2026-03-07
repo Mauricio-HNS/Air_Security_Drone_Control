@@ -5,25 +5,25 @@ info:
 paths:
   /health:
     get:
-      summary: Health check
+      summary: Chequeo de salud
       responses:
         '200': { description: OK }
   /metrics/basic:
     get:
-      summary: Basic request metrics
+      summary: Metricas basicas de solicitudes
       responses:
         '200': { description: OK }
   /api/notifications/send:
     post:
-      summary: Send notification
+      summary: Enviar notificacion
       security:
         - ApiKeyAuth: []
           RoleHeader: []
       responses:
-        '202': { description: Accepted }
+        '202': { description: Aceptado }
   /api/notifications:
     get:
-      summary: List notifications
+      summary: Listar notificaciones
       responses:
         '200': { description: OK }
 components:

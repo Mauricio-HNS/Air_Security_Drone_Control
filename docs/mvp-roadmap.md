@@ -1,26 +1,26 @@
-# Roadmap MVP
+# Hoja de Ruta MVP
 
-## Fase 1 - Bootstrap (concluida)
+## Fase 1 - Bootstrap (completada)
 
-- Solucao .NET e separacao por servicos.
+- Solucion .NET y separacao por servicios.
 - Contratos de dominio compartilhados.
-- Endpoints iniciais para ingestao, fusao, scoring e incidentes.
+- Endpoints iniciales para ingesta, fusion, scoring y incidentes.
 - API de consolidacao para Command Center.
 
-## Fase 2 - Integracao real
+## Fase 2 - Integracion real
 
 - Kafka para `DetectionReceived`, `TrackFused`, `ThreatAssessed`, `IncidentOpened`.
-- Persistencia em Postgres/PostGIS.
-- Cache de estado de alvo em Redis.
+- Persistencia en Postgres/PostGIS.
+- Cache de estado de objetivo en Redis.
 
-## Fase 3 - Operacao
+## Fase 3 - Operacion
 
-- Rules Engine com politicas configuraveis por zona.
+- Rules Engine con politicas configurables por zona.
 - Notificacao multicanal (webhook, SMS, e-mail).
-- Replay tatico com timeline e evidencias.
+- Replay tatico con timeline y evidencias.
 
 ## Fase 4 - Inteligencia historica
 
-- Timeseries para comportamento e densidade de eventos.
+- Timeseries para comportamento y densidade de eventos.
 - Deteccao de anomalia por local/hora.
 - Ajuste de limiares por perfil regional (aprendizado local).

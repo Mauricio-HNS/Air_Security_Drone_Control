@@ -5,69 +5,69 @@ info:
 paths:
   /health:
     get:
-      summary: Health check
+      summary: Chequeo de salud
       responses:
         '200': { description: OK }
   /metrics/basic:
     get:
-      summary: Basic request metrics
+      summary: Metricas basicas de solicitudes
       responses:
         '200': { description: OK }
   /api/projections/tracks:
     post:
-      summary: Project track
+      summary: Proyectar trayectoria
       security:
         - ApiKeyAuth: []
           RoleHeader: []
       responses:
-        '202': { description: Accepted }
+        '202': { description: Aceptado }
   /api/projections/threats:
     post:
-      summary: Project threat
+      summary: Proyectar amenaza
       security:
         - ApiKeyAuth: []
           RoleHeader: []
       responses:
-        '202': { description: Accepted }
+        '202': { description: Aceptado }
   /api/projections/incidents:
     post:
-      summary: Project incident
+      summary: Proyectar incidente
       security:
         - ApiKeyAuth: []
           RoleHeader: []
       responses:
-        '202': { description: Accepted }
+        '202': { description: Aceptado }
   /api/projections/sensors:
     post:
-      summary: Project sensor status
+      summary: Proyectar estado del sensor
       security:
         - ApiKeyAuth: []
           RoleHeader: []
       responses:
-        '202': { description: Accepted }
+        '202': { description: Aceptado }
   /api/overview:
     get:
-      summary: Overview snapshot
+      summary: Instantanea de overview
       responses:
         '200': { description: OK }
   /api/tracks:
     get:
-      summary: List tracks
+      summary: Listar trayectorias
       responses:
         '200': { description: OK }
   /api/incidents:
     get:
-      summary: List incidents
+      summary: Listar incidentes
       responses:
         '200': { description: OK }
   /api/sensors/status:
     get:
-      summary: List sensors
+      summary: Listar sensores
       responses:
         '200': { description: OK }
   /api/replay/{incidentId}:
     get:
-      summary: Incident replay
+      summary: Replay de incidente
       parameters:
         - in: path
           name: incidentId
@@ -75,7 +75,7 @@ paths:
           schema: { type: string, format: uuid }
       responses:
         '200': { description: OK }
-        '404': { description: Not found }
+        '404': { description: No encontrado }
 components:
   securitySchemes:
     ApiKeyAuth:

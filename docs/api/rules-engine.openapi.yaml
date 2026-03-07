@@ -5,29 +5,29 @@ info:
 paths:
   /health:
     get:
-      summary: Health check
+      summary: Chequeo de salud
       responses:
         '200': { description: OK }
   /metrics/basic:
     get:
-      summary: Basic request metrics
+      summary: Metricas basicas de solicitudes
       responses:
         '200': { description: OK }
   /api/rules:
     post:
-      summary: Create rule policy (admin)
+      summary: Crear politica de regla (admin)
       security:
         - ApiKeyAuth: []
           RoleHeader: []
       responses:
-        '201': { description: Created }
+        '201': { description: Creado }
     get:
-      summary: List rule policies
+      summary: Listar politicas de reglas
       responses:
         '200': { description: OK }
   /api/rules/simulate:
     post:
-      summary: Simulate rule decision
+      summary: Simular decision de regla
       security:
         - ApiKeyAuth: []
           RoleHeader: []

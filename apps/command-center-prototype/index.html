@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="pt-BR">
+<html lang="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -14,44 +14,44 @@
   <div class="layout">
     <aside class="sidebar">
       <h1>Air Security Drone Control</h1>
-      <p class="muted">Urban Air Defense Platform</p>
+      <p class="muted">Plataforma de Defensa Aerea Urbana</p>
       <nav>
-        <button class="nav-btn active" data-view="overview">Mapa Tático</button>
+        <button class="nav-btn active" data-view="overview">Mapa Tactico</button>
         <button class="nav-btn" data-view="incidents">Incidentes</button>
         <button class="nav-btn" data-view="sensors">Sensores</button>
         <button class="nav-btn" data-view="replay">Replay</button>
-        <button class="nav-btn" data-view="architecture">Arquitetura</button>
+        <button class="nav-btn" data-view="architecture">Arquitectura</button>
       </nav>
       <div class="status-card">
-        <p>Status Operacional</p>
-        <strong id="ops-status">ALERTA AMARELO</strong>
-        <small>Atualizado em <span id="ops-time">--:--:--</span></small>
+        <p>Estado Operativo</p>
+        <strong id="ops-status">ALERTA AMARILLA</strong>
+        <small>Actualizado en <span id="ops-time">--:--:--</span></small>
       </div>
     </aside>
 
     <main class="content">
       <header class="topbar">
         <div>
-          <h2 id="view-title">Mapa Tático</h2>
-          <p id="view-subtitle" class="muted">Visão em tempo real de tracks, zonas e ameaça</p>
+          <h2 id="view-title">Mapa Tactico</h2>
+          <p id="view-subtitle" class="muted">Vista en tiempo real de tracks, zonas y amenaza</p>
         </div>
         <div class="actions">
           <button id="connect-btn">Modo Live: OFF</button>
-          <button id="simulate-btn">Simular Novo Evento</button>
+          <button id="simulate-btn">Simular Nuevo Evento</button>
         </div>
       </header>
 
       <section id="overview" class="view active">
         <div class="cards">
-          <article class="card"><span>Tracks Ativos</span><strong id="kpi-tracks">3</strong></article>
-          <article class="card"><span>Incidentes Abertos</span><strong id="kpi-incidents">1</strong></article>
-          <article class="card"><span>Ameaça Máxima</span><strong id="kpi-threat">HIGH</strong></article>
-          <article class="card"><span>Confiança Média</span><strong id="kpi-confidence">82%</strong></article>
+          <article class="card"><span>Tracks Activos</span><strong id="kpi-tracks">3</strong></article>
+          <article class="card"><span>Incidentes Abiertos</span><strong id="kpi-incidents">1</strong></article>
+          <article class="card"><span>Amenaza Maxima</span><strong id="kpi-threat">HIGH</strong></article>
+          <article class="card"><span>Confianza Media</span><strong id="kpi-confidence">82%</strong></article>
         </div>
         <div class="panel map">
-          <h3>Mapa de Vigilância (simulado)</h3>
+          <h3>Mapa de Vigilancia (simulado)</h3>
           <div class="map-canvas" id="map-canvas">
-            <div class="zone sensitive" style="left: 58%; top: 40%; width: 180px; height: 180px;">Zona A (Sensível)</div>
+            <div class="zone sensitive" style="left: 58%; top: 40%; width: 180px; height: 180px;">Zona A (Sensible)</div>
             <div class="zone" style="left: 18%; top: 62%; width: 140px; height: 140px;">Zona B</div>
           </div>
         </div>
@@ -59,22 +59,22 @@
 
       <section id="incidents" class="view">
         <div class="panel">
-          <h3>Fila de Incidentes</h3>
+          <h3>Cola de Incidentes</h3>
           <div id="incident-list" class="stack"></div>
         </div>
       </section>
 
       <section id="sensors" class="view">
         <div class="panel">
-          <h3>Estado dos Sensores</h3>
+          <h3>Estado de Sensores</h3>
           <div id="sensor-grid" class="sensor-grid"></div>
         </div>
       </section>
 
       <section id="replay" class="view">
         <div class="panel">
-          <h3>Replay Tático</h3>
-          <p class="muted">Volte na linha do tempo para entender como o incidente evoluiu.</p>
+          <h3>Replay Tactico</h3>
+          <p class="muted">Vuelve en la linea temporal para entender como evoluciono el incidente.</p>
           <input id="replay-slider" type="range" min="0" max="100" value="45" />
           <div id="replay-output" class="replay-output"></div>
         </div>
@@ -82,7 +82,7 @@
 
       <section id="architecture" class="view">
         <div class="panel">
-          <h3>Fluxo Modular</h3>
+          <h3>Flujo Modular</h3>
           <div class="pipeline" id="pipeline"></div>
         </div>
       </section>

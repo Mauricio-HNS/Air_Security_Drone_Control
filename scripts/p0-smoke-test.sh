@@ -22,7 +22,7 @@ if [[ "$code" != "401" ]]; then
   echo "[ERROR] expected 401 without API key, got $code"
   exit 1
 fi
-echo "[OK] security denies unauthenticated POST"
+echo "[OK] seguridad bloquea POST sin autenticacion"
 
 code=$(curl -s -o /dev/null -w "%{http_code}" -X POST http://127.0.0.1:5102/api/fusion/fuse \
   -H "X-API-Key: $API_KEY" -H "X-Role: $ROLE" -H "Content-Type: application/json" -d '{"detections":[]}')
@@ -30,6 +30,6 @@ if [[ "$code" != "400" ]]; then
   echo "[ERROR] expected 400 with valid auth and invalid payload, got $code"
   exit 1
 fi
-echo "[OK] security allows authenticated request"
+echo "[OK] seguridad permite solicitud autenticada"
 
-echo "Smoke test passed."
+echo "Smoke test superado."

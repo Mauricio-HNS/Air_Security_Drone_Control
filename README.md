@@ -1,26 +1,26 @@
 # Air Security Drone Control
 
-Plataforma modular de consciencia situacional aerea para deteccao, classificacao, fusao, tracking e resposta operacional contra ameacas em baixo espaco aereo urbano.
+Plataforma modular de conciencia situacional aerea para deteccion, clasificacion, fusion, tracking y respuesta operativa contra amenazas en bajo espacio aereo urbano.
 
-> Este README e a fonte oficial do estado do produto e sera atualizado continuamente a cada evolucao relevante.
+> Este README es la fuente oficial del estado del producto y sera actualizado continuamente en cada evolucion relevante.
 
-## Objetivo do MVP
+## Objetivo del MVP
 
-- Ingerir deteccoes multi-sensor.
-- Fundir deteccoes para reduzir falso positivo.
+- Ingerir detecciones multisensor.
+- Fusionar detecciones para reducir falsos positivos.
 - Calcular threat score dinamico.
-- Abrir e atualizar incidentes.
-- Expor visao consolidada para centro de comando.
+- Abrir y actualizar incidentes.
+- Exponer una vista consolidada para el centro de mando.
 
 ## Stack inicial
 
-- ASP.NET Core (.NET 9) para APIs de servico.
-- C# para dominio e orquestracao.
-- PostgreSQL + PostGIS (planejado).
-- Redis para estado/cache rapido (planejado).
-- Kafka para eventos (planejado).
+- ASP.NET Core (.NET 9) para APIs de servicio.
+- C# para dominio y orquestacion.
+- PostgreSQL + PostGIS (planificado).
+- Redis para estado/cache rapido (planificado).
+- Kafka para eventos (planificado).
 
-## Estrutura do repositorio
+## Estructura del repositorio
 
 ```text
 apps/
@@ -54,17 +54,17 @@ scripts/
 docker-compose.yml
 ```
 
-## Protótipo visual (produto primeiro)
+## Prototipo visual (producto primero)
 
-Antes de fechar backend completo, o fluxo operacional esta sendo validado visualmente no Command Center:
+Antes de cerrar el backend completo, el flujo operativo se esta validando visualmente en el Command Center:
 
 - `apps/command-center-prototype/index.html`
-- Mapa tatico, incidentes, sensores, replay e fluxo modular.
-- Modo Live para consumir dados reais do backend (`http://127.0.0.1:5105`).
+- Mapa tactico, incidentes, sensores, replay y flujo modular.
+- Modo Live para consumir datos reales del backend (`http://127.0.0.1:5105`).
 
 ## Screenshots
 
-Capturas atuais da interface do Command Center:
+Capturas actuales de la interfaz del Command Center:
 
 ![Overview](./screenshots/01-overview.png)
 ![Incidents](./screenshots/02-incidents.png)
@@ -72,20 +72,20 @@ Capturas atuais da interface do Command Center:
 ![Replay](./screenshots/04-replay.png)
 ![Architecture](./screenshots/05-architecture.png)
 
-Execucao:
+Ejecucion:
 
 ```bash
 cd apps/command-center-prototype
 python3 -m http.server 4173
 ```
 
-Acesso:
+Acceso:
 
 - `http://127.0.0.1:4173`
 
 ## Contratos de API (OpenAPI)
 
-Especificacoes iniciais dos modulos MVP:
+Especificaciones iniciales de los modulos MVP:
 
 - `docs/api/sensor-gateway.openapi.yaml`
 - `docs/api/fusion.openapi.yaml`
@@ -96,76 +96,76 @@ Especificacoes iniciais dos modulos MVP:
 - `docs/api/notifications.openapi.yaml`
 - `docs/api/evidence.openapi.yaml`
 
-## Blueprint do Produto
+## Blueprint del Producto
 
-Documento completo da visao de plataforma e capacidades:
+Documento completo de la vision de plataforma y capacidades:
 
 - `docs/drone-xone-airspace-blueprint.md`
 
 ## Matriz de Entrega
 
-Priorizacao executavel das funcionalidades por fase:
+Priorizacion ejecutable de funcionalidades por fase:
 
 - `docs/feature-matrix.md`
 
 ## Backlog P0
 
-Plano tecnico detalhado para concluir o MVP operacional:
+Plan tecnico detallado para completar el MVP operativo:
 
 - `docs/p0-execution-backlog.md`
 
 ## Runbook Local
 
-Guia rapido de operacao e troubleshooting local:
+Guia rapido de operacion y troubleshooting local:
 
 - `docs/local-runbook.md`
 
-## Segurança Operacional (Dev)
+## Seguridad Operativa (Dev)
 
-- Todos os endpoints mutaveis exigem:
+- Todos los endpoints mutables exigen:
   - Header `X-API-Key: dev-local-key`
-  - Header `X-Role: operator` ou `admin` (conforme endpoint)
-- Leitura publica (GET) permanece aberta no ambiente local.
+  - Header `X-Role: operator` o `admin` (segun el endpoint)
+- La lectura publica (GET) permanece abierta en el entorno local.
 
-## Observabilidade Basica
+## Observabilidad Basica
 
-- Cada servico expõe `GET /metrics/basic` com contadores de requests por rota e status code.
+- Cada servicio expone `GET /metrics/basic` con contadores de requests por ruta y codigo de estado.
 
-## Como rodar localmente
+## Como ejecutar en local
 
-1. Restaurar e compilar:
+1. Restaurar y compilar:
 
 ```bash
 dotnet restore
 dotnet build AirSecurityDroneControl.sln
 ```
 
-2. Subir stack P0 com um comando:
+2. Levantar stack P0 con un comando:
 
 ```bash
 dotnet build AirSecurityDroneControl.sln
 ./scripts/run-p0-stack.sh
 ```
 
-3. Rodar demo fim a fim:
+3. Ejecutar demo end-to-end:
 
 ```bash
 ./scripts/p0-e2e-demo.sh
 ```
 
-4. Parar stack:
+4. Detener stack:
 
 ```bash
 ./scripts/stop-p0-stack.sh
 ```
 
-5. Rodar smoke test de saúde e segurança:
+5. Ejecutar smoke test de salud y seguridad:
 
 ```bash
 ./scripts/p0-smoke-test.sh
 ```
 
-Opcional (manual): subir servicos em terminais separados:
+Opcional (manual): levantar servicios en terminales separados:
 
 ```bash
 dotnet run --project src/Services/SensorGateway.Api --urls http://127.0.0.1:5101
@@ -178,7 +178,7 @@ dotnet run --project src/Services/Notifications.Api --urls http://127.0.0.1:5107
 dotnet run --project src/Services/Evidence.Api --urls http://127.0.0.1:5108
 ```
 
-Verificacao rapida:
+Verificacion rapida:
 
 ```bash
 curl -s http://127.0.0.1:5101/health
@@ -191,9 +191,9 @@ curl -s http://127.0.0.1:5107/health
 curl -s http://127.0.0.1:5108/health
 ```
 
-## Estado atual
+## Estado actual
 
-Este repositorio contem o bootstrap de arquitetura e endpoints de dominio para:
+Este repositorio contiene el bootstrap de arquitectura y endpoints de dominio para:
 
 - `DetectionEvent`
 - `FusedTrack`
@@ -203,51 +203,51 @@ Este repositorio contem o bootstrap de arquitetura e endpoints de dominio para:
 - `NotificationMessage`
 - `EvidenceItem`
 
-Persistencia duravel local (JSON) e event log local estao ativos em `.runtime/data/<service>`.
-Mensageria distribuida e autenticacao enterprise permanecem como proximas iteracoes.
+Persistencia durable local (JSON) y event log local estan activos en `.runtime/data/<service>`.
+Mensajeria distribuida y autenticacion enterprise quedan para las proximas iteraciones.
 
-## Evolucao continua (compromisso)
+## Evolucion continua (compromiso)
 
-Cada nova iteracao deve:
+Cada nueva iteracion debe:
 
-1. Implementar uma capacidade real (nao apenas mock).
-2. Atualizar este README com:
-   - o que entrou,
-   - como executar,
+1. Implementar una capacidad real (no solo mock).
+2. Actualizar este README con:
+   - lo que se incorporo,
+   - como ejecutar,
    - como validar,
-   - o que ainda falta.
-3. Manter rastreabilidade entre UI, contratos e servicos.
+   - lo que aun falta.
+3. Mantener trazabilidad entre UI, contratos y servicios.
 
-## Fases e criterio de pronto
+## Fases y criterio de listo
 
-### Fase 1 - Visual + Contratos (em andamento)
-- [x] Prototipo de Command Center navegavel.
-- [x] Contratos de dominio iniciais.
+### Fase 1 - Visual + Contratos (en curso)
+- [x] Prototipo de Command Center navegable.
+- [x] Contratos de dominio iniciales.
 - [ ] Contrato HTTP formal (OpenAPI) por modulo.
 
-### Fase 2 - Backend operacional MVP
-- [ ] Pipeline real: ingestao -> fusao -> threat -> incidente.
-- [ ] Persistencia de incidentes e tracks.
-- [ ] Regras de alerta por zona configuravel.
-- [ ] Endpoint de overview alimentando a UI sem dados simulados.
+### Fase 2 - Backend operativo MVP
+- [ ] Pipeline real: ingesta -> fusion -> threat -> incidente.
+- [ ] Persistencia de incidentes y tracks.
+- [ ] Reglas de alerta por zona configurable.
+- [ ] Endpoint de overview alimentando la UI sin datos simulados.
 
-### Fase 3 - Integracao multisensor
-- [ ] Adaptadores para camera, RF, radar e audio.
-- [ ] Normalizacao de deteccoes por tipo de sensor.
-- [ ] Correlacao temporal e geoespacial multi-fonte.
+### Fase 3 - Integracion multisensor
+- [ ] Adaptadores para camara, RF, radar y audio.
+- [ ] Normalizacion de detecciones por tipo de sensor.
+- [ ] Correlacion tiemporal y geoespacial multi-fuente.
 
-### Fase 4 - Producao
-- [ ] Kafka (ou equivalente) para eventos.
-- [ ] Observabilidade (OpenTelemetry + Prometheus + Grafana).
-- [ ] Autenticacao, autorizacao e trilha de auditoria.
-- [ ] Deploy conteinerizado e runbook operacional.
+### Fase 4 - Produccion
+- [ ] Kafka (o equivalente) para eventos.
+- [ ] Observabilidad (OpenTelemetry + Prometheus + Grafana).
+- [ ] Autenticacion, autorizacion y trazabilidad de auditoria.
+- [ ] Deploy contenerizado y runbook operativo.
 
-## Definicao de funcional (para este projeto)
+## Definicion de funcional (para este proyecto)
 
-O sistema sera considerado funcional quando:
+El sistema sera considerado funcional cuando:
 
-1. Detectar eventos de pelo menos 2 tipos de sensor reais.
-2. Confirmar alvo com fusao multi-sensor e confianca rastreavel.
-3. Gerar threat score e incidente automaticamente por regra.
-4. Exibir tudo em tempo real no Command Center.
-5. Permitir replay completo de incidente com timeline e evidencias.
+1. Detectar eventos de al menos 2 tipos de sensor reales.
+2. Confirmar objetivo con fusion multisensor y confianza trazable.
+3. Generar threat score y incidente automaticamente por regla.
+4. Mostrar todo en tiempo real en el Command Center.
+5. Permitir replay completo del incidente con timeline y evidencias.
