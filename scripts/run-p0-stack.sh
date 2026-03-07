@@ -11,11 +11,17 @@ mkdir -p "$LOG_DIR"
 
 start_service() {
   local name="$1"
-  local project="$2"
+  local dll_path="$2"
   local port="$3"
   local log_file="$LOG_DIR/${name}.log"
 
-  nohup dotnet run --no-build --no-launch-profile --project "$ROOT_DIR/$project" --urls "http://127.0.0.1:${port}" >"$log_file" 2>&1 &
+  if [[ ! -f "$ROOT_DIR/$dll_path" ]]; then
+    echo "[ERROR] Missing binary: $dll_path"
+    echo "Build first: dotnet build AirSecurityDroneControl.sln"
+    exit 1
+  fi
+
+  nohup dotnet "$ROOT_DIR/$dll_path" --urls "http://127.0.0.1:${port}" >"$log_file" 2>&1 &
   local pid=$!
 
   echo "${name}:${pid}:${port}" >> "$PID_FILE"
@@ -37,14 +43,14 @@ start_service() {
   exit 1
 }
 
-start_service "sensor-gateway" "src/Services/SensorGateway.Api/SensorGateway.Api.csproj" 5101
-start_service "fusion" "src/Services/Fusion.Api/Fusion.Api.csproj" 5102
-start_service "threat-scoring" "src/Services/ThreatScoring.Api/ThreatScoring.Api.csproj" 5103
-start_service "incidents" "src/Services/Incidents.Api/Incidents.Api.csproj" 5104
-start_service "command-center" "src/CommandCenter/CommandCenter.Api/CommandCenter.Api.csproj" 5105
-start_service "rules-engine" "src/Services/RulesEngine.Api/RulesEngine.Api.csproj" 5106
-start_service "notifications" "src/Services/Notifications.Api/Notifications.Api.csproj" 5107
-start_service "evidence" "src/Services/Evidence.Api/Evidence.Api.csproj" 5108
+start_service "sensor-gateway" "src/Services/SensorGateway.Api/bin/Debug/net9.0/SensorGateway.Api.dll" 5101
+start_service "fusion" "src/Services/Fusion.Api/bin/Debug/net9.0/Fusion.Api.dll" 5102
+start_service "threat-scoring" "src/Services/ThreatScoring.Api/bin/Debug/net9.0/ThreatScoring.Api.dll" 5103
+start_service "incidents" "src/Services/Incidents.Api/bin/Debug/net9.0/Incidents.Api.dll" 5104
+start_service "command-center" "src/CommandCenter/CommandCenter.Api/bin/Debug/net9.0/CommandCenter.Api.dll" 5105
+start_service "rules-engine" "src/Services/RulesEngine.Api/bin/Debug/net9.0/RulesEngine.Api.dll" 5106
+start_service "notifications" "src/Services/Notifications.Api/bin/Debug/net9.0/Notifications.Api.dll" 5107
+start_service "evidence" "src/Services/Evidence.Api/bin/Debug/net9.0/Evidence.Api.dll" 5108
 
 echo ""
 echo "P0 stack is running."

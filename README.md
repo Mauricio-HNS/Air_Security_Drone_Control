@@ -132,6 +132,7 @@ dotnet build AirSecurityDroneControl.sln
 2. Subir stack P0 com um comando:
 
 ```bash
+dotnet build AirSecurityDroneControl.sln
 ./scripts/run-p0-stack.sh
 ```
 
