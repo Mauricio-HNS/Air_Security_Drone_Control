@@ -50,6 +50,7 @@ scripts/
   run-p0-stack.sh
   stop-p0-stack.sh
   p0-e2e-demo.sh
+  p0-smoke-test.sh
 docker-compose.yml
 ```
 
@@ -146,6 +147,12 @@ dotnet build AirSecurityDroneControl.sln
 
 ```bash
 ./scripts/stop-p0-stack.sh
+```
+
+5. Rodar smoke test de saúde e segurança:
+
+```bash
+./scripts/p0-smoke-test.sh
 ```
 
 Opcional (manual): subir servicos em terminais separados:
