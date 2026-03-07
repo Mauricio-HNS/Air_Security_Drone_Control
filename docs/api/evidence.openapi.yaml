@@ -1,0 +1,19 @@
+openapi: 3.0.3
+info:
+  title: Air Security Drone Control Evidence API
+  version: 0.1.0
+paths:
+  /health:
+    get:
+      summary: Health check
+      responses:
+        '200': { description: OK }
+  /api/evidence:
+    post:
+      summary: Store evidence item with hash
+      responses:
+        '201': { description: Created }
+    get:
+      summary: List evidence items
+      responses:
+        '200': { description: OK }

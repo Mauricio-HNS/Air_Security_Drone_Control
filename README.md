@@ -33,6 +33,9 @@ src/
     Fusion.Api/
     ThreatScoring.Api/
     Incidents.Api/
+    RulesEngine.Api/
+    Notifications.Api/
+    Evidence.Api/
   CommandCenter/
     CommandCenter.Api/
 docs/
@@ -78,6 +81,9 @@ Especificacoes iniciais dos modulos MVP:
 - `docs/api/threat-scoring.openapi.yaml`
 - `docs/api/incidents.openapi.yaml`
 - `docs/api/command-center.openapi.yaml`
+- `docs/api/rules-engine.openapi.yaml`
+- `docs/api/notifications.openapi.yaml`
+- `docs/api/evidence.openapi.yaml`
 
 ## Blueprint do Produto
 
@@ -138,6 +144,9 @@ dotnet run --project src/Services/Fusion.Api --urls http://127.0.0.1:5102
 dotnet run --project src/Services/ThreatScoring.Api --urls http://127.0.0.1:5103
 dotnet run --project src/Services/Incidents.Api --urls http://127.0.0.1:5104
 dotnet run --project src/CommandCenter/CommandCenter.Api --urls http://127.0.0.1:5105
+dotnet run --project src/Services/RulesEngine.Api --urls http://127.0.0.1:5106
+dotnet run --project src/Services/Notifications.Api --urls http://127.0.0.1:5107
+dotnet run --project src/Services/Evidence.Api --urls http://127.0.0.1:5108
 ```
 
 Verificacao rapida:
@@ -148,6 +157,9 @@ curl -s http://127.0.0.1:5102/health
 curl -s http://127.0.0.1:5103/health
 curl -s http://127.0.0.1:5104/health
 curl -s http://127.0.0.1:5105/health
+curl -s http://127.0.0.1:5106/health
+curl -s http://127.0.0.1:5107/health
+curl -s http://127.0.0.1:5108/health
 ```
 
 ## Estado atual
@@ -158,8 +170,12 @@ Este repositorio contem o bootstrap de arquitetura e endpoints de dominio para:
 - `FusedTrack`
 - `ThreatAssessment`
 - `IncidentCase`
+- `RulePolicy`
+- `NotificationMessage`
+- `EvidenceItem`
 
-Persistencia, mensageria e autenticacao estao planejadas para as proximas iteracoes.
+Persistencia duravel local (JSON) e event log local estao ativos em `.runtime/data/<service>`.
+Mensageria distribuida e autenticacao enterprise permanecem como proximas iteracoes.
 
 ## Evolucao continua (compromisso)
 

@@ -14,6 +14,9 @@
 - Threat Scoring: `http://127.0.0.1:5103`
 - Incidents: `http://127.0.0.1:5104`
 - Command Center: `http://127.0.0.1:5105`
+- Rules Engine: `http://127.0.0.1:5106`
+- Notifications: `http://127.0.0.1:5107`
+- Evidence: `http://127.0.0.1:5108`
 
 ## Logs e processos
 
@@ -41,3 +44,6 @@
   - `curl -s http://127.0.0.1:5103/health`
   - `curl -s http://127.0.0.1:5104/health`
   - `curl -s http://127.0.0.1:5105/health`
+  - `curl -s http://127.0.0.1:5106/health`
+  - `curl -s http://127.0.0.1:5107/health`
+  - `curl -s http://127.0.0.1:5108/health`

@@ -1,0 +1,24 @@
+openapi: 3.0.3
+info:
+  title: Air Security Drone Control Rules Engine API
+  version: 0.1.0
+paths:
+  /health:
+    get:
+      summary: Health check
+      responses:
+        '200': { description: OK }
+  /api/rules:
+    post:
+      summary: Create rule policy
+      responses:
+        '201': { description: Created }
+    get:
+      summary: List rule policies
+      responses:
+        '200': { description: OK }
+  /api/rules/simulate:
+    post:
+      summary: Simulate rule decision for a threat context
+      responses:
+        '200': { description: Decision output }

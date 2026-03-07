@@ -42,6 +42,9 @@ start_service "fusion" "src/Services/Fusion.Api/Fusion.Api.csproj" 5102
 start_service "threat-scoring" "src/Services/ThreatScoring.Api/ThreatScoring.Api.csproj" 5103
 start_service "incidents" "src/Services/Incidents.Api/Incidents.Api.csproj" 5104
 start_service "command-center" "src/CommandCenter/CommandCenter.Api/CommandCenter.Api.csproj" 5105
+start_service "rules-engine" "src/Services/RulesEngine.Api/RulesEngine.Api.csproj" 5106
+start_service "notifications" "src/Services/Notifications.Api/Notifications.Api.csproj" 5107
+start_service "evidence" "src/Services/Evidence.Api/Evidence.Api.csproj" 5108
 
 echo ""
 echo "P0 stack is running."

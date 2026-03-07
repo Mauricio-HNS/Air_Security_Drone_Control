@@ -6,6 +6,9 @@ base_fusion="http://127.0.0.1:5102"
 base_threat="http://127.0.0.1:5103"
 base_incidents="http://127.0.0.1:5104"
 base_command="http://127.0.0.1:5105"
+base_rules="http://127.0.0.1:5106"
+base_notifications="http://127.0.0.1:5107"
+base_evidence="http://127.0.0.1:5108"
 
 check_health() {
   local name="$1"
@@ -19,6 +22,9 @@ check_health "fusion" "$base_fusion"
 check_health "threat-scoring" "$base_threat"
 check_health "incidents" "$base_incidents"
 check_health "command-center" "$base_command"
+check_health "rules-engine" "$base_rules"
+check_health "notifications" "$base_notifications"
+check_health "evidence" "$base_evidence"
 
 echo "[1/8] Ingest detections"
 d1=$(curl -fsS -X POST "$base_sensor/api/sensors/detections" \
@@ -67,12 +73,19 @@ PY
 )
 incident=$(curl -fsS -X POST "$base_incidents/api/incidents/open" -H "Content-Type: application/json" -d "$incident_payload")
 
-echo "[5/8] Project track, threat and incident to command center"
+echo "[5/10] Evaluate rules and project to command center"
+rule=$(curl -fsS -X POST "$base_rules/api/rules/simulate" -H "Content-Type: application/json" -d "$(python3 - "$threat" <<'PY'
+import json,sys
+t=json.loads(sys.argv[1])
+print(json.dumps({"zone":"Zona A","threatScore":t["score"],"detectionCount":2}))
+PY
+)")
+
 curl -fsS -X POST "$base_command/api/projections/tracks" -H "Content-Type: application/json" -d "$track" >/dev/null
 curl -fsS -X POST "$base_command/api/projections/threats" -H "Content-Type: application/json" -d "$threat" >/dev/null
 curl -fsS -X POST "$base_command/api/projections/incidents" -H "Content-Type: application/json" -d "$incident" >/dev/null
 
-echo "[6/8] Project sensor status"
+echo "[6/10] Project sensor status"
 sensor_status=$(curl -fsS "$base_sensor/api/sensors/status")
 python3 - "$sensor_status" "$base_command" <<'PY'
 import json,sys,urllib.request
@@ -90,7 +103,33 @@ for sensor in sensors:
 print("projected", len(sensors), "sensor status entries")
 PY
 
-echo "[7/8] Fetch overview"
+echo "[7/10] Store evidence"
+evidence=$(curl -fsS -X POST "$base_evidence/api/evidence" -H "Content-Type: application/json" -d "$(python3 - "$incident" "$threat" <<'PY'
+import json,sys
+inc=json.loads(sys.argv[1]); thr=json.loads(sys.argv[2])
+print(json.dumps({
+  "incidentId": inc["incidentId"],
+  "evidenceType": "telemetry",
+  "content": f"Threat score={thr['score']} summary={thr['summary']}"
+}))
+PY
+)")
+
+echo "[8/10] Send notification"
+notification=$(curl -fsS -X POST "$base_notifications/api/notifications/send" -H "Content-Type: application/json" -d "$(python3 - "$incident" "$rule" <<'PY'
+import json,sys
+inc=json.loads(sys.argv[1]); rule=json.loads(sys.argv[2])
+print(json.dumps({
+  "incidentId": inc["incidentId"],
+  "channel": "webhook",
+  "severity": "HIGH",
+  "target": "soc://default",
+  "message": f\"Incident {inc['incidentId']} action {rule['action']} - {rule['reason']}\"
+}))
+PY
+)")
+
+echo "[9/10] Fetch overview"
 overview=$(curl -fsS "$base_command/api/overview")
 
 incident_id=$(python3 - "$incident" <<'PY'
@@ -99,7 +138,7 @@ print(json.loads(sys.argv[1])["incidentId"])
 PY
 )
 
-echo "[8/8] Fetch replay"
+echo "[10/10] Fetch replay"
 replay=$(curl -fsS "$base_command/api/replay/${incident_id}")
 
 echo ""
@@ -111,6 +150,15 @@ echo "$threat"
 echo ""
 echo "=== INCIDENT ==="
 echo "$incident"
+echo ""
+echo "=== RULE DECISION ==="
+echo "$rule"
+echo ""
+echo "=== EVIDENCE ==="
+echo "$evidence"
+echo ""
+echo "=== NOTIFICATION ==="
+echo "$notification"
 echo ""
 echo "=== OVERVIEW ==="
 echo "$overview"
