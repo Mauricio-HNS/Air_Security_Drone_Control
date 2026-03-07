@@ -1,14 +1,36 @@
 using System.Collections.Concurrent;
 using AirSecurityDroneControl.BuildingBlocks.Contracts;
 using AirSecurityDroneControl.BuildingBlocks.Infrastructure;
+using AirSecurityDroneControl.BuildingBlocks.Observability;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSingleton<ConcurrentDictionary<Guid, RulePolicy>>();
+builder.Services.AddSingleton<BasicMetrics>();
 var dataDir = Path.Combine(Directory.GetCurrentDirectory(), ".runtime", "data", "rules-engine");
 builder.Services.AddSingleton(new JsonFileStore<RulePolicy>(dataDir, "policies.json"));
 builder.Services.AddSingleton(new EventLog(dataDir));
 
 var app = builder.Build();
+app.UseMiddleware<BasicMetricsMiddleware>();
+app.Use(async (context, next) =>
+{
+    if (context.Request.Method == HttpMethods.Get)
+    {
+        await next();
+        return;
+    }
+
+    var adminOnly = context.Request.Path.StartsWithSegments("/api/rules")
+        && context.Request.Method == HttpMethods.Post
+        && !context.Request.Path.StartsWithSegments("/api/rules/simulate");
+
+    if (!HasAccess(context, app.Configuration, adminOnly))
+    {
+        return;
+    }
+
+    await next();
+});
 SeedData(app.Services);
 
 app.MapGet("/", () => Results.Ok(new
@@ -19,6 +41,7 @@ app.MapGet("/", () => Results.Ok(new
 }));
 
 app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
+app.MapGet("/metrics/basic", (BasicMetrics metrics) => Results.Ok(metrics.Snapshot()));
 
 app.MapPost("/api/rules", async (
     CreateRuleRequest request,
@@ -85,6 +108,29 @@ static void SeedData(IServiceProvider services)
     {
         policies[policy.RuleId] = policy;
     }
+}
+
+static bool HasAccess(HttpContext context, IConfiguration configuration, bool adminOnly)
+{
+    var key = context.Request.Headers["X-API-Key"].FirstOrDefault();
+    if (!string.Equals(key, configuration["Security:ApiKey"], StringComparison.Ordinal))
+    {
+        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+        return false;
+    }
+
+    var role = context.Request.Headers["X-Role"].FirstOrDefault();
+    var isAdmin = string.Equals(role, "admin", StringComparison.OrdinalIgnoreCase);
+    var isOperator = string.Equals(role, "operator", StringComparison.OrdinalIgnoreCase);
+
+    var ok = adminOnly ? isAdmin : (isAdmin || isOperator);
+    if (!ok)
+    {
+        context.Response.StatusCode = StatusCodes.Status403Forbidden;
+        return false;
+    }
+
+    return true;
 }
 
 public record CreateRuleRequest(string Name, string Zone, double MinThreatScore, int MinDetections, bool Enabled = true);

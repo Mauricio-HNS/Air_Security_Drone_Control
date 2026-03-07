@@ -109,6 +109,17 @@ Guia rapido de operacao e troubleshooting local:
 
 - `docs/local-runbook.md`
 
+## Segurança Operacional (Dev)
+
+- Todos os endpoints mutaveis exigem:
+  - Header `X-API-Key: dev-local-key`
+  - Header `X-Role: operator` ou `admin` (conforme endpoint)
+- Leitura publica (GET) permanece aberta no ambiente local.
+
+## Observabilidade Basica
+
+- Cada servico expõe `GET /metrics/basic` com contadores de requests por rota e status code.
+
 ## Como rodar localmente
 
 1. Restaurar e compilar:

@@ -7,6 +7,11 @@
 3. `./scripts/p0-e2e-demo.sh`
 4. `./scripts/stop-p0-stack.sh`
 
+## Headers para endpoints mutaveis
+
+- `X-API-Key: dev-local-key`
+- `X-Role: operator` (ou `admin` para rotas administrativas)
+
 ## Endpoints locais
 
 - Sensor Gateway: `http://127.0.0.1:5101`
@@ -47,3 +52,8 @@
   - `curl -s http://127.0.0.1:5106/health`
   - `curl -s http://127.0.0.1:5107/health`
   - `curl -s http://127.0.0.1:5108/health`
+
+### Inspecionar metrica basica
+
+- Exemplo:
+  - `curl -s http://127.0.0.1:5105/metrics/basic`

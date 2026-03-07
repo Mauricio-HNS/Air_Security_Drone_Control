@@ -3,14 +3,32 @@ using System.Security.Cryptography;
 using System.Text;
 using AirSecurityDroneControl.BuildingBlocks.Contracts;
 using AirSecurityDroneControl.BuildingBlocks.Infrastructure;
+using AirSecurityDroneControl.BuildingBlocks.Observability;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSingleton<ConcurrentDictionary<Guid, EvidenceItem>>();
+builder.Services.AddSingleton<BasicMetrics>();
 var dataDir = Path.Combine(Directory.GetCurrentDirectory(), ".runtime", "data", "evidence");
 builder.Services.AddSingleton(new JsonFileStore<EvidenceItem>(dataDir, "evidence.json"));
 builder.Services.AddSingleton(new EventLog(dataDir));
 
 var app = builder.Build();
+app.UseMiddleware<BasicMetricsMiddleware>();
+app.Use(async (context, next) =>
+{
+    if (context.Request.Method == HttpMethods.Get)
+    {
+        await next();
+        return;
+    }
+
+    if (!HasAccess(context, app.Configuration))
+    {
+        return;
+    }
+
+    await next();
+});
 SeedData(app.Services);
 
 app.MapGet("/", () => Results.Ok(new
@@ -21,6 +39,7 @@ app.MapGet("/", () => Results.Ok(new
 }));
 
 app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
+app.MapGet("/metrics/basic", (BasicMetrics metrics) => Results.Ok(metrics.Snapshot()));
 
 app.MapPost("/api/evidence", async (
     CreateEvidenceRequest request,
@@ -73,6 +92,27 @@ static string ComputeHash(string input)
 {
     var bytes = SHA256.HashData(Encoding.UTF8.GetBytes(input));
     return Convert.ToHexString(bytes);
+}
+
+static bool HasAccess(HttpContext context, IConfiguration configuration)
+{
+    var key = context.Request.Headers["X-API-Key"].FirstOrDefault();
+    if (!string.Equals(key, configuration["Security:ApiKey"], StringComparison.Ordinal))
+    {
+        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+        return false;
+    }
+
+    var role = context.Request.Headers["X-Role"].FirstOrDefault();
+    var ok = string.Equals(role, "operator", StringComparison.OrdinalIgnoreCase) ||
+             string.Equals(role, "admin", StringComparison.OrdinalIgnoreCase);
+    if (!ok)
+    {
+        context.Response.StatusCode = StatusCodes.Status403Forbidden;
+        return false;
+    }
+
+    return true;
 }
 
 public record CreateEvidenceRequest(Guid IncidentId, string EvidenceType, string Content);
