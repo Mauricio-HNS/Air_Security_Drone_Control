@@ -62,6 +62,16 @@ Antes de fechar backend completo, o fluxo operacional esta sendo validado visual
 - Mapa tatico, incidentes, sensores, replay e fluxo modular.
 - Modo Live para consumir dados reais do backend (`http://127.0.0.1:5105`).
 
+## Screenshots
+
+Capturas atuais da interface do Command Center:
+
+![Overview](./screenshots/01-overview.png)
+![Incidents](./screenshots/02-incidents.png)
+![Sensors](./screenshots/03-sensors.png)
+![Replay](./screenshots/04-replay.png)
+![Architecture](./screenshots/05-architecture.png)
+
 Execucao:
 
 ```bash
